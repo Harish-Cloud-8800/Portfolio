@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harish Yeluri — AI Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#060b14;
+  --bg2:#0c1525;
+  --bg3:#111d30;
+  --cyan:#00d4ff;
+  --cyan2:#00b4d8;
+  --purple:#7c3aed;
+  --green:#10b981;
+  --amber:#f59e0b;
+  --pink:#ec4899;
+  --text:#e2e8f0;
+  --text2:#94a3b8;
+  --text3:#64748b;
+  --border:rgba(0,212,255,0.12);
+  --border2:rgba(255,255,255,0.06);
+  --glow:0 0 20px rgba(0,212,255,0.3);
+  --glow2:0 0 40px rgba(0,212,255,0.15);
+  --radius:12px;
+  --nav:260px;
+}
+
+html{scroll-behavior:smooth}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+::selection{background:rgba(0,212,255,0.2);color:var(--cyan)}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px}
+
+/* ── CANVAS PARTICLES ── */
+#particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* ── SIDEBAR NAV ── */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:var(--nav);
+  background:rgba(6,11,20,0.95);
+  backdrop-filter:blur(20px);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  padding:2.5rem 1.75rem;
+  z-index:100;
+}
+.sidebar-logo{
+  font-family:'Fira Code',monospace;
+  font-size:1rem;font-weight:500;
+  color:var(--cyan);
+  margin-bottom:0.25rem;
+  text-shadow:var(--glow);
+}
+.sidebar-tagline{font-size:0.72rem;color:var(--text3);margin-bottom:2.5rem;font-family:'Fira Code',monospace}
+.nav-links{list-style:none;display:flex;flex-direction:column;gap:0.25rem;flex:1}
+.nav-links a{
+  display:flex;align-items:center;gap:0.75rem;
+  text-decoration:none;
+  padding:0.6rem 0.875rem;
+  border-radius:8px;
+  font-size:0.84rem;font-weight:500;
+  color:var(--text2);
+  transition:all 0.2s;
+  position:relative;
+  border:1px solid transparent;
+}
+.nav-links a:hover,.nav-links a.active{
+  color:var(--cyan);
+  background:rgba(0,212,255,0.06);
+  border-color:var(--border);
+}
+.nav-links a.active::before{
+  content:'';position:absolute;left:-1.75rem;top:50%;transform:translateY(-50%);
+  width:3px;height:60%;background:var(--cyan);border-radius:0 2px 2px 0;
+  box-shadow:var(--glow);
+}
+.nav-icon{font-size:1rem;width:20px;text-align:center}
+.sidebar-social{display:flex;gap:0.75rem;margin-top:2rem}
+.s-link{
+  width:36px;height:36px;border-radius:8px;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text2);text-decoration:none;font-size:0.9rem;
+  transition:all 0.2s;
+}
+.s-link:hover{color:var(--cyan);border-color:var(--cyan);box-shadow:var(--glow);background:rgba(0,212,255,0.06)}
+.sidebar-avail{
+  margin-top:1.25rem;
+  padding:0.625rem 0.875rem;
+  border-radius:8px;
+  background:rgba(16,185,129,0.08);
+  border:1px solid rgba(16,185,129,0.2);
+  font-size:0.75rem;color:var(--green);
+  display:flex;align-items:center;gap:0.5rem;
+}
+.avail-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse2 2s infinite;flex-shrink:0}
+@keyframes pulse2{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.3)}}
+
+/* ── MAIN CONTENT ── */
+main{margin-left:var(--nav);position:relative;z-index:1}
+section{min-height:100vh;padding:5rem 4rem;display:flex;flex-direction:column;justify-content:center}
+section:nth-child(even){background:rgba(12,21,37,0.5)}
+
+/* ── EYEBROW ── */
+.eyebrow{
+  font-family:'Fira Code',monospace;
+  font-size:0.75rem;color:var(--cyan);
+  letter-spacing:0.15em;text-transform:uppercase;
+  margin-bottom:0.75rem;
+  display:flex;align-items:center;gap:0.5rem;
+}
+.eyebrow::before{content:'//';opacity:0.5}
+.section-h{
+  font-size:clamp(1.8rem,3.5vw,2.75rem);
+  font-weight:700;
+  color:#fff;
+  line-height:1.1;
+  letter-spacing:-0.02em;
+  margin-bottom:0.75rem;
+}
+.section-h span{color:var(--cyan)}
+.section-desc{font-size:0.975rem;color:var(--text2);max-width:520px;margin-bottom:3rem}
+
+/* ── HERO ── */
+#home{
+  min-height:100vh;
+  padding:4rem 4rem;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;
+}
+.hero-pre{
+  font-family:'Fira Code',monospace;
+  font-size:0.9rem;color:var(--cyan);
+  margin-bottom:1.25rem;
+  opacity:0;animation:fadeUp 0.6s 0.2s forwards;
+}
+.hero-h1{
+  font-size:clamp(2.5rem,5vw,4.5rem);
+  font-weight:700;
+  line-height:1.05;
+  letter-spacing:-0.03em;
+  color:#fff;
+  margin-bottom:1rem;
+  opacity:0;animation:fadeUp 0.6s 0.4s forwards;
+}
+.hero-h1 .grad{
+  background:linear-gradient(135deg,var(--cyan) 0%,var(--purple) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-typing-wrap{
+  font-size:1.4rem;font-weight:500;color:var(--text);
+  margin-bottom:1.75rem;
+  height:2rem;
+  opacity:0;animation:fadeUp 0.6s 0.6s forwards;
+  font-family:'Fira Code',monospace;
+}
+#typed-text{color:var(--cyan)}
+.cursor{display:inline-block;width:3px;height:1.2em;background:var(--cyan);margin-left:2px;vertical-align:middle;animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hero-desc{
+  font-size:1.05rem;color:var(--text2);
+  max-width:560px;line-height:1.8;
+  margin-bottom:2.5rem;
+  opacity:0;animation:fadeUp 0.6s 0.8s forwards;
+}
+.hero-actions{
+  display:flex;gap:1rem;flex-wrap:wrap;
+  opacity:0;animation:fadeUp 0.6s 1s forwards;
+}
+.btn-glow{
+  padding:0.875rem 2rem;border-radius:8px;
+  font-size:0.9rem;font-weight:600;text-decoration:none;
+  background:linear-gradient(135deg,var(--cyan),var(--cyan2));
+  color:#000;
+  transition:all 0.25s;display:inline-flex;align-items:center;gap:0.5rem;
+  box-shadow:0 0 24px rgba(0,212,255,0.35);
+}
+.btn-glow:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,212,255,0.55)}
+.btn-outline{
+  padding:0.875rem 2rem;border-radius:8px;
+  font-size:0.9rem;font-weight:600;text-decoration:none;
+  background:transparent;color:var(--cyan);
+  border:1.5px solid var(--cyan);
+  transition:all 0.25s;display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-outline:hover{background:rgba(0,212,255,0.07);transform:translateY(-2px);box-shadow:var(--glow)}
+.hero-chips{
+  display:flex;flex-wrap:wrap;gap:0.5rem;
+  margin-top:2.5rem;
+  opacity:0;animation:fadeUp 0.6s 1.1s forwards;
+}
+.hchip{
+  padding:0.35rem 0.875rem;border-radius:100px;
+  font-size:0.75rem;font-weight:500;
+  font-family:'Fira Code',monospace;
+  border:1px solid var(--border);
+  color:var(--text2);background:rgba(255,255,255,0.03);
+  transition:all 0.2s;cursor:default;
+}
+.hchip:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,0.05)}
+
+/* ── HERO STATS ── */
+.hero-stats{
+  display:flex;gap:2rem;flex-wrap:wrap;
+  margin-top:3rem;padding-top:2.5rem;
+  border-top:1px solid var(--border2);
+  opacity:0;animation:fadeUp 0.6s 1.2s forwards;
+}
+.stat{text-align:left}
+.stat-num{font-size:2rem;font-weight:700;color:var(--cyan);font-family:'Fira Code',monospace;line-height:1}
+.stat-lbl{font-size:0.78rem;color:var(--text3);margin-top:0.25rem}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── ABOUT ── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+.about-text p{font-size:0.975rem;color:var(--text2);line-height:1.85;margin-bottom:1rem}
+.about-meta{margin-top:1.75rem;display:flex;flex-direction:column;gap:0.6rem}
+.am-row{display:flex;gap:0.75rem;align-items:baseline;font-size:0.875rem}
+.am-key{color:var(--cyan);font-family:'Fira Code',monospace;font-size:0.78rem;min-width:80px;flex-shrink:0}
+.am-val{color:var(--text2)}
+.about-cards{display:flex;flex-direction:column;gap:1rem}
+.about-card{
+  padding:1.25rem 1.5rem;
+  border-radius:var(--radius);
+  background:var(--bg2);
+  border:1px solid var(--border2);
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.about-card:hover{border-color:var(--border);box-shadow:var(--glow2)}
+.ac-title{font-weight:600;font-size:0.875rem;color:#fff;margin-bottom:0.35rem;display:flex;align-items:center;gap:0.5rem}
+.ac-body{font-size:0.82rem;color:var(--text2);line-height:1.65}
+
+/* ── SKILLS ── */
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem}
+.skill-card{
+  padding:1.5rem;border-radius:var(--radius);
+  background:var(--bg2);border:1px solid var(--border2);
+  transition:all 0.2s;
+}
+.skill-card:hover{border-color:var(--border);transform:translateY(-3px);box-shadow:var(--glow2)}
+.sc-head{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem}
+.sc-icon{
+  width:38px;height:38px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:1.05rem;
+  background:rgba(0,212,255,0.08);border:1px solid var(--border);
+}
+.sc-name{font-weight:600;font-size:0.875rem;color:#fff}
+.sc-tags{display:flex;flex-wrap:wrap;gap:0.35rem}
+.sc-tag{
+  padding:0.22rem 0.6rem;border-radius:5px;
+  font-size:0.7rem;font-weight:500;
+  font-family:'Fira Code',monospace;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border2);
+  color:var(--text2);
+  transition:all 0.15s;
+}
+.sc-tag:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* ── EXPERIENCE ── */
+.exp-timeline{position:relative;padding-left:2rem}
+.exp-timeline::before{
+  content:'';position:absolute;left:0;top:10px;bottom:0;
+  width:1px;
+  background:linear-gradient(180deg,var(--cyan) 0%,transparent 100%);
+}
+.exp-item{position:relative;margin-bottom:3rem}
+.exp-dot{
+  position:absolute;left:-2.375rem;top:8px;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 12px var(--cyan);
+  border:2px solid var(--bg);
+}
+.exp-dot.past{background:var(--text3);box-shadow:none}
+.exp-card{
+  padding:1.75rem;border-radius:var(--radius);
+  background:var(--bg2);border:1px solid var(--border2);
+  transition:all 0.2s;
+}
+.exp-card:hover{border-color:var(--border);box-shadow:var(--glow2)}
+.exp-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.2rem}
+.exp-role{font-size:1.15rem;font-weight:700;color:#fff}
+.exp-badge{
+  font-family:'Fira Code',monospace;
+  font-size:0.72rem;font-weight:500;
+  color:var(--cyan);
+  background:rgba(0,212,255,0.08);
+  border:1px solid rgba(0,212,255,0.2);
+  padding:0.22rem 0.75rem;border-radius:100px;white-space:nowrap;
+}
+.exp-co{font-size:0.9rem;font-weight:600;color:var(--cyan);margin-bottom:0.15rem}
+.exp-loc{font-size:0.78rem;color:var(--text3);margin-bottom:1.25rem;font-family:'Fira Code',monospace}
+.exp-bullets{list-style:none;display:flex;flex-direction:column;gap:0.5rem}
+.exp-bullets li{
+  font-size:0.85rem;color:var(--text2);line-height:1.7;
+  padding-left:1.25rem;position:relative;
+}
+.exp-bullets li::before{content:'▹';position:absolute;left:0;color:var(--cyan);font-size:0.75rem;top:0.2rem}
+.exp-stack{margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border2);display:flex;flex-wrap:wrap;gap:0.3rem}
+.exp-tag{
+  padding:0.18rem 0.55rem;border-radius:4px;
+  font-size:0.68rem;font-family:'Fira Code',monospace;
+  background:rgba(0,212,255,0.06);
+  border:1px solid rgba(0,212,255,0.15);
+  color:var(--cyan);
+}
+
+/* ── PROJECTS ── */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem}
+.proj-card{
+  padding:1.75rem;border-radius:var(--radius);
+  background:var(--bg2);border:1px solid var(--border2);
+  transition:all 0.25s;position:relative;overflow:hidden;
+  display:block;text-decoration:none;cursor:pointer;
+}
+.proj-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  transform:scaleX(0);transform-origin:center;
+  transition:transform 0.35s ease;
+}
+.proj-card:hover{border-color:var(--border);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.4),var(--glow2)}
+.proj-card:hover::before{transform:scaleX(1)}
+.proj-num{
+  font-family:'Fira Code',monospace;
+  font-size:0.72rem;color:var(--text3);
+  margin-bottom:0.875rem;letter-spacing:0.1em;
+}
+.proj-title{font-size:1rem;font-weight:700;color:#fff;margin-bottom:0.625rem}
+.proj-desc{font-size:0.84rem;color:var(--text2);line-height:1.75;margin-bottom:1rem}
+.proj-result{
+  display:inline-flex;align-items:center;gap:0.35rem;
+  font-size:0.78rem;font-weight:600;color:var(--green);
+  background:rgba(16,185,129,0.08);
+  border:1px solid rgba(16,185,129,0.2);
+  padding:0.25rem 0.7rem;border-radius:5px;
+  margin-bottom:1rem;
+}
+.proj-tech{display:flex;flex-wrap:wrap;gap:0.3rem;padding-top:1rem;border-top:1px solid var(--border2)}
+.proj-tag{
+  padding:0.18rem 0.55rem;border-radius:4px;
+  font-size:0.68rem;font-family:'Fira Code',monospace;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border2);color:var(--text2);
+}
+.proj-gh{
+  display:inline-flex;align-items:center;gap:0.35rem;
+  font-size:0.75rem;font-weight:600;
+  color:var(--cyan);font-family:'Fira Code',monospace;
+  margin-top:1rem;
+  opacity:0;transition:opacity 0.2s;
+}
+.proj-card:hover .proj-gh{opacity:1}
+
+/* ── CERTS ── */
+.certs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.cert-card{
+  padding:1.25rem 1.5rem;border-radius:var(--radius);
+  background:var(--bg2);border:1px solid var(--border2);
+  display:flex;align-items:center;gap:1rem;
+  transition:all 0.2s;
+}
+.cert-card:hover{border-color:var(--border);box-shadow:var(--glow2)}
+.cert-icon{
+  width:40px;height:40px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.15rem;flex-shrink:0;
+  background:rgba(0,212,255,0.08);border:1px solid var(--border);
+}
+.cert-name{font-size:0.84rem;font-weight:600;color:#fff;line-height:1.3}
+.cert-issuer{font-size:0.73rem;color:var(--cyan);margin-top:0.2rem;font-family:'Fira Code',monospace}
+
+/* ── EDUCATION ── */
+.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.edu-card{
+  padding:1.75rem;border-radius:var(--radius);
+  background:var(--bg2);border:1px solid var(--border2);
+  transition:all 0.2s;
+}
+.edu-card:hover{border-color:var(--border);box-shadow:var(--glow2)}
+.edu-pill{
+  display:inline-block;
+  padding:0.22rem 0.75rem;border-radius:5px;
+  font-size:0.72rem;font-weight:600;font-family:'Fira Code',monospace;
+  text-transform:uppercase;letter-spacing:0.05em;margin-bottom:1rem;
+  background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);
+  color:var(--cyan);
+}
+.edu-pill.gold{background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.2);color:var(--amber)}
+.edu-deg{font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:0.2rem;line-height:1.3}
+.edu-field{font-size:0.88rem;font-weight:600;color:var(--cyan);margin-bottom:0.2rem}
+.edu-uni{font-size:0.84rem;color:var(--text2);margin-bottom:0.375rem}
+.edu-date{font-size:0.78rem;color:var(--text3);font-family:'Fira Code',monospace}
+.edu-courses{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border2)}
+.edu-ct{font-size:0.72rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem}
+.edu-tags{display:flex;flex-wrap:wrap;gap:0.3rem}
+.edu-tag{padding:0.18rem 0.55rem;border-radius:4px;font-size:0.7rem;background:rgba(255,255,255,0.04);border:1px solid var(--border2);color:var(--text2)}
+
+/* ── CONTACT ── */
+.contact-inner{max-width:700px}
+.contact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1.5rem}
+.cc{
+  padding:1.5rem;border-radius:var(--radius);
+  background:var(--bg2);border:1px solid var(--border2);
+  text-decoration:none;transition:all 0.2s;
+  display:flex;align-items:center;gap:1rem;
+}
+.cc:hover{border-color:var(--cyan);box-shadow:var(--glow);transform:translateY(-2px)}
+.cc-icon{font-size:1.5rem;width:42px;text-align:center}
+.cc-label{font-size:0.72rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;font-family:'Fira Code',monospace}
+.cc-val{font-size:0.84rem;color:var(--text);font-weight:500;margin-top:0.1rem}
+.avail-box{
+  padding:1.25rem 1.5rem;border-radius:var(--radius);
+  background:rgba(16,185,129,0.06);
+  border:1px solid rgba(16,185,129,0.2);
+  color:var(--green);font-weight:600;font-size:0.88rem;
+  display:flex;align-items:center;gap:0.75rem;
+  line-height:1.6;
+}
+
+/* ── FOOTER ── */
+footer{
+  margin-left:0;
+  background:var(--bg2);
+  border-top:1px solid var(--border2);
+  text-align:center;padding:2rem;
+  color:var(--text3);font-size:0.82rem;
+  font-family:'Fira Code',monospace;
+}
+footer span{color:var(--cyan)}
+
+/* ── SCROLL FADE ── */
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity 0.65s ease,transform 0.65s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  :root{--nav:0px}
+  .sidebar{display:none}
+  main{margin-left:0}
+  section{padding:4rem 1.5rem}
+  .about-grid,.edu-grid{grid-template-columns:1fr}
+  .contact-grid{grid-template-columns:1fr}
+  .hero-stats{gap:1.25rem}
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">harish.yeluri</div>
+  <div class="sidebar-tagline">// AI Engineer</div>
+  <ul class="nav-links">
+    <li><a href="#home" class="active"><span class="nav-icon">⌂</span> Home</a></li>
+    <li><a href="#about"><span class="nav-icon">◉</span> About</a></li>
+    <li><a href="#skills"><span class="nav-icon">⚡</span> Skills</a></li>
+    <li><a href="#experience"><span class="nav-icon">◈</span> Experience</a></li>
+    <li><a href="#projects"><span class="nav-icon">◆</span> Projects</a></li>
+    <li><a href="#certifications"><span class="nav-icon">✦</span> Certifications</a></li>
+    <li><a href="#education"><span class="nav-icon">▣</span> Education</a></li>
+    <li><a href="#contact"><span class="nav-icon">◎</span> Contact</a></li>
+  </ul>
+  <div class="sidebar-social">
+    <a class="s-link" href="mailto:Harishyeluri8800@gmail.com" title="Email">✉</a>
+    <a class="s-link" href="https://www.linkedin.com/in/harish8800/" target="_blank" title="LinkedIn">in</a>
+    <a class="s-link" href="https://github.com/Harish-Cloud-8800" target="_blank" title="GitHub">⌥</a>
+  </div>
+  <div class="sidebar-avail">
+    <div class="avail-dot"></div>
+    <div>Available for roles</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main>
+
+<!-- HOME -->
+<section id="home">
+  <p class="hero-pre">Hello, World! 👋  I'm</p>
+  <h1 class="hero-h1">Harish Yeluri<br><span class="grad">AI Engineer</span></h1>
+  <div class="hero-typing-wrap">
+    <span id="typed-text"></span><span class="cursor"></span>
+  </div>
+  <p class="hero-desc">3+ years building production-grade LLM systems, RAG pipelines, multi-agent workflows, and intelligent automation that enterprises actually trust and use — not just in demos.</p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn-glow">Get In Touch →</a>
+    <a href="#projects" class="btn-outline">View Projects</a>
+  </div>
+  <div class="hero-chips">
+    <span class="hchip">GPT-4</span>
+    <span class="hchip">Claude</span>
+    <span class="hchip">LangGraph</span>
+    <span class="hchip">CrewAI</span>
+    <span class="hchip">MCP</span>
+    <span class="hchip">RAG</span>
+    <span class="hchip">Ollama / vLLM</span>
+    <span class="hchip">FastAPI</span>
+    <span class="hchip">AWS</span>
+    <span class="hchip">Docker</span>
+    <span class="hchip">React</span>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">3+</div><div class="stat-lbl">Years in Production AI</div></div>
+    <div class="stat"><div class="stat-num">+35%</div><div class="stat-lbl">RAG Accuracy Boost</div></div>
+    <div class="stat"><div class="stat-num">&lt;100ms</div><div class="stat-lbl">Real-time AI Latency</div></div>
+    <div class="stat"><div class="stat-num">60+</div><div class="stat-lbl">AI/ML Tools Mastered</div></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="fade-in">
+    <div class="eyebrow">about_me</div>
+    <h2 class="section-h">Who I <span>Am</span></h2>
+    <p class="section-desc">Passionate AI engineer turning cutting-edge research into production systems that real businesses rely on.</p>
+  </div>
+  <div class="about-grid fade-in">
+    <div class="about-text">
+      <p>I'm Harish Yeluri, an AI Engineer based in Kansas City, USA. I specialize in end-to-end AI systems — from LLM orchestration and RAG pipelines to multi-agent workflows and intelligent automation platforms that go far beyond demo quality.</p>
+      <p>Currently at Synchtron.AI, I architect AI copilots and agentic systems using GPT-4, Claude, open-source LLMs (LLaMA, Mistral), and MCP-enabled agent frameworks. My work spans enterprise knowledge assistants, business intelligence agents, freight automation platforms, and voice-enabled AI applications.</p>
+      <p>I believe great AI engineering means bridging the gap between what's technically possible and what actually moves the needle for real teams.</p>
+      <div class="about-meta">
+        <div class="am-row"><span class="am-key">location</span><span class="am-val">Kansas City, Missouri, USA</span></div>
+        <div class="am-row"><span class="am-key">available</span><span class="am-val">Mon–Fri, 9AM–5PM CT</span></div>
+        <div class="am-row"><span class="am-key">email</span><span class="am-val">Harishyeluri8800@gmail.com</span></div>
+        <div class="am-row"><span class="am-key">phone</span><span class="am-val">(913) 543-1677</span></div>
+        <div class="am-row"><span class="am-key">github</span><span class="am-val">github.com/Harish-Cloud-8800</span></div>
+      </div>
+    </div>
+    <div class="about-cards">
+      <div class="about-card">
+        <div class="ac-title">⚡ Core Specializations</div>
+        <div class="ac-body">Agentic AI · Multi-Agent Systems · RAG Pipelines · MCP Integrations · LLM Orchestration · Workflow Automation · Business Intelligence Agents · Voice AI</div>
+      </div>
+      <div class="about-card">
+        <div class="ac-title">🌍 Open To</div>
+        <div class="ac-body">Full-time AI Engineer roles across the USA — Remote, Hybrid, or On-site. Open to relocation. Available immediately.</div>
+      </div>
+      <div class="about-card">
+        <div class="ac-title">🎓 Education</div>
+        <div class="ac-body">M.S. Computer Science — University of Central Missouri (Dec 2025)<br>B.Tech ECE — JNTU Kakinada, India (2022)</div>
+      </div>
+      <div class="about-card">
+        <div class="ac-title">💡 Background</div>
+        <div class="ac-body">Started in Electronics & Communication Engineering, transitioned to AI through curiosity and self-drive. Now building enterprise-grade agentic AI systems at Synchtron.AI.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="fade-in">
+    <div class="eyebrow">tech_stack</div>
+    <h2 class="section-h">Skills & <span>Technologies</span></h2>
+    <p class="section-desc">A full-stack AI engineering toolkit — from LLM development to cloud deployment and voice AI.</p>
+  </div>
+  <div class="skills-grid fade-in">
+    <div class="skill-card">
+      <div class="sc-head"><div class="sc-icon">🤖</div><div class="sc-name">Generative AI & LLMs</div></div>
+      <div class="sc-tags"><span class="sc-tag">GPT-4</span><span class="sc-tag">Claude</span><span class="sc-tag">Gemini</span><span class="sc-tag">LLaMA</span><span class="sc-tag">Mistral</span><span class="sc-tag">Gemma</span><span class="sc-tag">Azure OpenAI</span><span class="sc-tag">AWS Bedrock</span><span class="sc-tag">Ollama</span><span class="sc-tag">vLLM</span></div>
+    </div>
+    <div class="skill-card">
+      <div class="sc-head"><div class="sc-icon">🕹️</div><div class="sc-name">Agentic AI & Orchestration</div></div>
+      <div class="sc-tags"><span class="sc-tag">LangGraph</span><span class="sc-tag">CrewAI</span><span class="sc-tag">AutoGen</span><span class="sc-tag">LangChain</span><span class="sc-tag">LlamaIndex</span><span class="sc-tag">MCP</span><span class="sc-tag">Multi-Agent Systems</span><span class="sc-tag">Tool Calling</span></div>
+    </div>
+    <div class="skill-card">
+      <div class="sc-head"><div class="sc-icon">📚</div><div class="sc-name">RAG & Vector Search</div></div>
+      <div class="sc-tags"><span class="sc-tag">RAG</span><span class="sc-tag">Hybrid Search</span><span class="sc-tag">Semantic Chunking</span><span class="sc-tag">Reranking</span><span class="sc-tag">Pinecone</span><span class="sc-tag">Weaviate</span><span class="sc-tag">ChromaDB</span><span class="sc-tag">pgvector</span><span class="sc-tag">Qdrant</span></div>
+    </div>
+    <div class="skill-card">
+      <div class="sc-head"><div class="sc-icon">🔊</div><div class="sc-name">Voice AI</div></div>
+      <div class="sc-tags"><span class="sc-tag">Whisper (STT)</span><span class="sc-tag">Azure Speech Services</span><span class="sc-tag">Amazon Polly</span><span class="sc-tag">Voice Processing</span><span class="sc-tag">TTS Pipelines</span></div>
+    </div>
+    <div class="skill-card">
+      <div class="sc-head"><div class="sc-icon">⚙️</div><div class="sc-name">Workflow Automation</div></div>
+      <div class="sc-tags"><span class="sc-tag">n8n</span><span class="sc-tag">Business Process Automation</span><span class="sc-tag">REST APIs</span><span class="sc-tag">Webhooks</span><span class="sc-tag">CRM Integrations</span><span class="sc-tag">ERP Integrations</span><span class="sc-tag">ETL Pipelines</span></div>
+    </div>
+    <div class="skill-card">
+      <div class="sc-head"><div class="sc-icon">📊</div><div class="sc-name">Business Intelligence</div></div>
+      <div class="sc-tags"><span class="sc-tag">BI Agents</span><span class="sc-tag">KPI Monitoring</span><span class="sc-tag">Freight Analytics</span><span class="sc-tag">Automated Reporting</span><span class="sc-tag">Decision Support</span></div>
+    </div>
+    <div class="skill-card">
+      <div class="sc-head"><div class="sc-icon">🧠</div><div class="sc-name">ML & Deep Learning</div></div>
+      <div class="sc-tags"><span class="sc-tag">PyTorch</span><span class="sc-tag">TensorFlow</span><span class="sc-tag">Hugging Face</span><span class="sc-tag">scikit-learn</span><span class="sc-tag">Fine-tuning</span><span class="sc-tag">NLP</span><span class="sc-tag">Anomaly Detection</span></div>
+    </div>
+    <div class="skill-card">
+      <div class="sc-head"><div class="sc-icon">☁️</div><div class="sc-name">Cloud & Infrastructure</div></div>
+      <div class="sc-tags"><span class="sc-tag">AWS EC2/ECS/Lambda</span><span class="sc-tag">S3</span><span class="sc-tag">Azure AI Services</span><span class="sc-tag">GCP</span><span class="sc-tag">GPU Inference Servers</span><span class="sc-tag">Terraform</span></div>
+    </div>
+    <div class="skill-card">
+      <div class="sc-head"><div class="sc-icon">🔁</div><div class="sc-name">DevOps & MLOps</div></div>
+      <div class="sc-tags"><span class="sc-tag">Docker</span><span class="sc-tag">Kubernetes</span><span class="sc-tag">MLflow</span><span class="sc-tag">GitHub Actions</span><span class="sc-tag">Prometheus</span><span class="sc-tag">Grafana</span><span class="sc-tag">OpenTelemetry</span><span class="sc-tag">CI/CD</span></div>
+    </div>
+    <div class="skill-card">
+      <div class="sc-head"><div class="sc-icon">🗄️</div><div class="sc-name">Backend & Data</div></div>
+      <div class="sc-tags"><span class="sc-tag">FastAPI</span><span class="sc-tag">Flask</span><span class="sc-tag">ASP.NET Core</span><span class="sc-tag">Node.js</span><span class="sc-tag">PostgreSQL</span><span class="sc-tag">MongoDB</span><span class="sc-tag">Redis</span><span class="sc-tag">PySpark</span></div>
+    </div>
+    <div class="skill-card">
+      <div class="sc-head"><div class="sc-icon">🌐</div><div class="sc-name">Frontend</div></div>
+      <div class="sc-tags"><span class="sc-tag">React.js</span><span class="sc-tag">Next.js</span><span class="sc-tag">TypeScript</span><span class="sc-tag">Tailwind CSS</span><span class="sc-tag">Material UI</span></div>
+    </div>
+    <div class="skill-card">
+      <div class="sc-head"><div class="sc-icon">🔒</div><div class="sc-name">Security & Governance</div></div>
+      <div class="sc-tags"><span class="sc-tag">RBAC</span><span class="sc-tag">PII / PHI Protection</span><span class="sc-tag">HIPAA Awareness</span><span class="sc-tag">Responsible AI</span><span class="sc-tag">Audit Logging</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="fade-in">
+    <div class="eyebrow">work_experience</div>
+    <h2 class="section-h">Work <span>Experience</span></h2>
+    <p class="section-desc">3+ years building production AI systems across enterprise environments in the USA and India.</p>
+  </div>
+  <div class="exp-timeline fade-in">
+
+    <div class="exp-item">
+      <div class="exp-dot"></div>
+      <div class="exp-card">
+        <div class="exp-top">
+          <div class="exp-role">Applied AI & ML Engineer</div>
+          <span class="exp-badge">Nov 2024 – Present</span>
+        </div>
+        <div class="exp-co">Synchtron.AI</div>
+        <div class="exp-loc">Kansas City, USA · Full-time</div>
+        <ul class="exp-bullets">
+          <li>Designed and deployed AI copilots, enterprise assistants, and intelligent automation using GPT-4, Claude, Azure OpenAI, LangGraph, and CrewAI</li>
+          <li>Built MCP-enabled multi-agent architectures integrating AI agents with databases, APIs, dashboards, CRM platforms, and business applications</li>
+          <li>Developed end-to-end RAG platforms using ChromaDB, Weaviate, pgvector — semantic chunking, metadata filtering, reranking, and contextual retrieval</li>
+          <li>Deployed open-source LLMs (LLaMA, Mistral) using Ollama and vLLM on AWS EC2 GPU instances and containerized inference environments</li>
+          <li>Built business intelligence agents analyzing operational data, generating KPI reports, identifying trends, and delivering actionable insights to leadership</li>
+          <li>Developed voice-enabled AI assistants with Whisper (STT) and Azure Speech Services (TTS) for hands-free operational workflows</li>
+          <li>Engineered ETL/ELT pipelines for data ingestion, semantic indexing, embedding generation, vector storage, and scheduled refresh</li>
+          <li>Implemented hallucination detection, response quality monitoring, and AI observability frameworks for production reliability</li>
+        </ul>
+        <div class="exp-stack">
+          <span class="exp-tag">Python</span><span class="exp-tag">GPT-4</span><span class="exp-tag">Claude</span><span class="exp-tag">LangGraph</span><span class="exp-tag">CrewAI</span><span class="exp-tag">AutoGen</span><span class="exp-tag">MCP</span><span class="exp-tag">Ollama</span><span class="exp-tag">vLLM</span><span class="exp-tag">Weaviate</span><span class="exp-tag">ChromaDB</span><span class="exp-tag">FastAPI</span><span class="exp-tag">Docker</span><span class="exp-tag">Kubernetes</span><span class="exp-tag">AWS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-dot past"></div>
+      <div class="exp-card">
+        <div class="exp-top">
+          <div class="exp-role">Generative AI Engineer</div>
+          <span class="exp-badge">Apr 2023 – Jan 2024</span>
+        </div>
+        <div class="exp-co">TechBion Software Systems Pvt Ltd</div>
+        <div class="exp-loc">India · Full-time</div>
+        <ul class="exp-bullets">
+          <li>Built production-grade AI applications integrating OpenAI APIs with enterprise knowledge systems and customer-facing platforms</li>
+          <li>Designed RAG architectures using embeddings, vector search, semantic retrieval, and intelligent re-ranking pipelines</li>
+          <li>Developed conversational AI assistants and LLM-powered document processing solutions for enterprise business operations</li>
+          <li>Created scalable FastAPI/Flask microservices supporting AI inference, context assembly, and tool orchestration</li>
+          <li>Built event-driven automation workflows and reusable AI frameworks that accelerated future automation deployments</li>
+        </ul>
+        <div class="exp-stack">
+          <span class="exp-tag">Python</span><span class="exp-tag">OpenAI</span><span class="exp-tag">LangChain</span><span class="exp-tag">FastAPI</span><span class="exp-tag">Flask</span><span class="exp-tag">PostgreSQL</span><span class="exp-tag">Docker</span><span class="exp-tag">Kubernetes</span><span class="exp-tag">AWS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-dot past"></div>
+      <div class="exp-card">
+        <div class="exp-top">
+          <div class="exp-role">AI Solutions Engineer</div>
+          <span class="exp-badge">Nov 2021 – Mar 2023</span>
+        </div>
+        <div class="exp-co">Prism Technologies Pvt Ltd</div>
+        <div class="exp-loc">India · Full-time</div>
+        <ul class="exp-bullets">
+          <li>Developed ML and AI-powered recommendation systems, predictive analytics models, and intelligent automation workflows</li>
+          <li>Built cloud-native backend APIs integrating AI capabilities into production platforms on AWS and Azure</li>
+          <li>Created data pipelines for ingestion, transformation, and model training on structured and semi-structured datasets</li>
+          <li>Collaborated with business stakeholders to identify high-impact automation opportunities</li>
+        </ul>
+        <div class="exp-stack">
+          <span class="exp-tag">Python</span><span class="exp-tag">SQL</span><span class="exp-tag">AWS</span><span class="exp-tag">Azure</span><span class="exp-tag">REST APIs</span><span class="exp-tag">Docker</span><span class="exp-tag">Kubernetes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="fade-in">
+    <div class="eyebrow">key_projects</div>
+    <h2 class="section-h">Projects & <span>Achievements</span></h2>
+    <p class="section-desc">Real results from production AI systems — not just demos.</p>
+  </div>
+  <div class="projects-grid fade-in">
+    <a class="proj-card" href="https://github.com/Harish-Cloud-8800" target="_blank">
+      <div class="proj-num">PROJECT · 01</div>
+      <div class="proj-title">Freight Brokerage AI Automation Platform</div>
+      <div class="proj-desc">AI-powered freight operations platform with Track & Trace assistants, business intelligence agents generating KPI insights, and workflow automation for quoting, carrier onboarding, and customer follow-ups.</div>
+      <div class="proj-result">✅ Reduced manual ops effort across freight teams</div>
+      <div class="proj-tech"><span class="proj-tag">GPT-4</span><span class="proj-tag">LangChain</span><span class="proj-tag">SQL</span><span class="proj-tag">PostgreSQL</span><span class="proj-tag">FastAPI</span><span class="proj-tag">Docker</span></div>
+      <div class="proj-gh">🐙 View on GitHub →</div>
+    </a>
+    <a class="proj-card" href="https://github.com/Harish-Cloud-8800" target="_blank">
+      <div class="proj-num">PROJECT · 02</div>
+      <div class="proj-title">Artist Growth Copilot</div>
+      <div class="proj-desc">AI copilot analyzing streaming, social media, and engagement metrics to surface audience growth opportunities and campaign strategies. GPT-4 + RAG with React dashboards delivering actionable artist performance intelligence.</div>
+      <div class="proj-result">✅ Actionable insights from streaming & social data</div>
+      <div class="proj-tech"><span class="proj-tag">GPT-4</span><span class="proj-tag">LangChain</span><span class="proj-tag">Pinecone</span><span class="proj-tag">PostgreSQL</span><span class="proj-tag">React</span><span class="proj-tag">FastAPI</span></div>
+      <div class="proj-gh">🐙 View on GitHub →</div>
+    </a>
+    <a class="proj-card" href="https://github.com/Harish-Cloud-8800" target="_blank">
+      <div class="proj-num">PROJECT · 03</div>
+      <div class="proj-title">Enterprise Knowledge Assistant (MCP-Enabled)</div>
+      <div class="proj-desc">Conversational AI assistant with MCP-enabled agent workflows providing natural-language access to enterprise documentation, SOPs, and knowledge repositories. Implemented RAG, semantic chunking, metadata filtering, and reranking.</div>
+      <div class="proj-result">✅ 60%+ reduction in time-to-answer on internal knowledge</div>
+      <div class="proj-tech"><span class="proj-tag">LangChain</span><span class="proj-tag">LlamaIndex</span><span class="proj-tag">Weaviate</span><span class="proj-tag">pgvector</span><span class="proj-tag">MCP</span><span class="proj-tag">FastAPI</span></div>
+      <div class="proj-gh">🐙 View on GitHub →</div>
+    </a>
+    <a class="proj-card" href="https://github.com/Harish-Cloud-8800" target="_blank">
+      <div class="proj-num">PROJECT · 04</div>
+      <div class="proj-title">AI Sales Coaching Assistant</div>
+      <div class="proj-desc">AI-powered sales coaching platform with real-time guidance, automated call summarization, objection analysis, opportunity detection, and follow-up recommendation workflows driven by intelligent AI feedback loops.</div>
+      <div class="proj-result">✅ Improved sales team productivity & win rates</div>
+      <div class="proj-tech"><span class="proj-tag">GPT-4</span><span class="proj-tag">LangGraph</span><span class="proj-tag">CrewAI</span><span class="proj-tag">FastAPI</span><span class="proj-tag">PostgreSQL</span></div>
+      <div class="proj-gh">🐙 View on GitHub →</div>
+    </a>
+    <a class="proj-card" href="https://github.com/Harish-Cloud-8800" target="_blank">
+      <div class="proj-num">PROJECT · 05</div>
+      <div class="proj-title">Voice-Enabled Operations Assistant</div>
+      <div class="proj-desc">Speech-enabled AI assistant supporting voice interactions for operational workflows. Integrated Whisper STT, Azure TTS, retrieval-based answering, and task automation providing hands-free AI access to business data.</div>
+      <div class="proj-result">✅ Hands-free AI operations across field workflows</div>
+      <div class="proj-tech"><span class="proj-tag">Whisper</span><span class="proj-tag">Azure Speech Services</span><span class="proj-tag">LangChain</span><span class="proj-tag">ChromaDB</span><span class="proj-tag">FastAPI</span></div>
+      <div class="proj-gh">🐙 View on GitHub →</div>
+    </a>
+    <a class="proj-card" href="https://github.com/Harish-Cloud-8800" target="_blank">
+      <div class="proj-num">PROJECT · 06</div>
+      <div class="proj-title">AI Campaign Planner (Agentic)</div>
+      <div class="proj-desc">Agentic workflow system generating personalized marketing and content strategies by integrating multiple data sources through retrieval pipelines and contextual reasoning — automated trend analysis using LLM-powered agent networks.</div>
+      <div class="proj-result">✅ Automated multi-channel campaign strategy generation</div>
+      <div class="proj-tech"><span class="proj-tag">LangGraph</span><span class="proj-tag">CrewAI</span><span class="proj-tag">GPT-4</span><span class="proj-tag">FastAPI</span></div>
+      <div class="proj-gh">🐙 View on GitHub →</div>
+    </a>
+  </div>
+  <div class="fade-in" style="margin-top:2rem;text-align:center">
+    <a href="https://github.com/Harish-Cloud-8800" target="_blank" class="btn-outline">🐙 View More on GitHub →</a>
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications">
+  <div class="fade-in">
+    <div class="eyebrow">certifications</div>
+    <h2 class="section-h">My <span>Certifications</span></h2>
+    <p class="section-desc">Verified credentials from Microsoft, AWS, DeepLearning.AI, and Anthropic.</p>
+  </div>
+  <div class="certs-grid fade-in">
+    <div class="cert-card">
+      <div class="cert-icon">🧠</div>
+      <div><div class="cert-name">Azure AI Fundamentals (AI-900)</div><div class="cert-issuer">Microsoft</div></div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-icon">☁️</div>
+      <div><div class="cert-name">Azure Fundamentals (AZ-900)</div><div class="cert-issuer">Microsoft</div></div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-icon">🔶</div>
+      <div><div class="cert-name">AWS Certified Cloud Practitioner</div><div class="cert-issuer">Amazon Web Services</div></div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-icon">🤖</div>
+      <div><div class="cert-name">Generative AI with Large Language Models</div><div class="cert-issuer">DeepLearning.AI / Coursera</div></div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-icon">🟢</div>
+      <div><div class="cert-name">AI Fluency: Framework & Foundations</div><div class="cert-issuer">Anthropic</div></div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-icon">⬛</div>
+      <div><div class="cert-name">Claude 101</div><div class="cert-issuer">Anthropic</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="fade-in">
+    <div class="eyebrow">education</div>
+    <h2 class="section-h">My <span>Education</span></h2>
+    <p class="section-desc">Strong academic foundation combining US Computer Science with engineering fundamentals.</p>
+  </div>
+  <div class="edu-grid fade-in">
+    <div class="edu-card">
+      <span class="edu-pill">Master's Degree</span>
+      <div class="edu-deg">Master of Science (M.S.)</div>
+      <div class="edu-field">Computer Science</div>
+      <div class="edu-uni">University of Central Missouri (UCM) · Warrensburg, Missouri, USA</div>
+      <div class="edu-date">Jan 2024 – Dec 2025</div>
+      <div class="edu-courses">
+        <div class="edu-ct">Key Coursework</div>
+        <div class="edu-tags">
+          <span class="edu-tag">Artificial Intelligence</span><span class="edu-tag">Machine Learning</span><span class="edu-tag">Deep Learning</span><span class="edu-tag">NLP</span><span class="edu-tag">Cloud Computing</span><span class="edu-tag">Distributed Systems</span><span class="edu-tag">Advanced Algorithms</span>
+        </div>
+      </div>
+    </div>
+    <div class="edu-card">
+      <span class="edu-pill gold">Bachelor's Degree</span>
+      <div class="edu-deg">Bachelor of Technology (B.Tech)</div>
+      <div class="edu-field">Electronics & Communication Engineering</div>
+      <div class="edu-uni">Jawaharlal Nehru Technological University (JNTU) Kakinada · India</div>
+      <div class="edu-date">2018 – 2022</div>
+      <div class="edu-courses">
+        <div class="edu-ct">Key Coursework</div>
+        <div class="edu-tags">
+          <span class="edu-tag">Digital Electronics</span><span class="edu-tag">Signal Processing</span><span class="edu-tag">Microprocessors</span><span class="edu-tag">C Programming</span><span class="edu-tag">MATLAB</span><span class="edu-tag">Mathematics</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="fade-in">
+    <div class="eyebrow">contact_me</div>
+    <h2 class="section-h">Let's <span>Connect</span></h2>
+    <p class="section-desc">Open to AI Engineer roles across the USA — remote, hybrid, or on-site. I respond within 24 hours.</p>
+  </div>
+  <div class="contact-inner fade-in">
+    <div class="contact-grid">
+      <a class="cc" href="mailto:Harishyeluri8800@gmail.com">
+        <div class="cc-icon">📧</div>
+        <div><div class="cc-label">Email</div><div class="cc-val">Harishyeluri8800@gmail.com</div></div>
+      </a>
+      <a class="cc" href="tel:9135431677">
+        <div class="cc-icon">📞</div>
+        <div><div class="cc-label">Phone</div><div class="cc-val">(913) 543-1677</div></div>
+      </a>
+      <a class="cc" href="https://www.linkedin.com/in/harish8800/" target="_blank">
+        <div class="cc-icon">💼</div>
+        <div><div class="cc-label">LinkedIn</div><div class="cc-val">Harish Yeluri</div></div>
+      </a>
+      <a class="cc" href="https://github.com/Harish-Cloud-8800" target="_blank">
+        <div class="cc-icon">🐙</div>
+        <div><div class="cc-label">GitHub</div><div class="cc-val">Harish-Cloud-8800</div></div>
+      </a>
+    </div>
+    <div class="avail-box">
+      <div class="avail-dot"></div>
+      🟢 Available Mon–Fri · 9:00 AM – 5:00 PM Central Time · Kansas City, USA · Open to Remote · Hybrid · On-site · Available Immediately
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span>Harish Yeluri</span> · AI Engineer · Kansas City, USA · <span>harishyeluri8800@gmail.com</span>
+</footer>
+
+<script>
+// ── PARTICLES ──
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.r = Math.random() * 1.5 + 0.3;
+    this.alpha = Math.random() * 0.5 + 0.1;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,212,255,${this.alpha})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+function drawLines() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      if (d < 120) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0,212,255,${0.08 * (1 - d/120)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+  drawLines();
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ── TYPING EFFECT ──
+const phrases = [
+  'Building Agentic AI Systems',
+  'Designing RAG Pipelines',
+  'Crafting Multi-Agent Workflows',
+  'Deploying LLMs in Production',
+  'Engineering AI Automation',
+];
+let pi = 0, ci = 0, deleting = false;
+const el = document.getElementById('typed-text');
+
+function type() {
+  const phrase = phrases[pi];
+  if (!deleting) {
+    el.textContent = phrase.slice(0, ci++);
+    if (ci > phrase.length) { deleting = true; setTimeout(type, 1800); return; }
+  } else {
+    el.textContent = phrase.slice(0, ci--);
+    if (ci < 0) { deleting = false; pi = (pi + 1) % phrases.length; ci = 0; }
+  }
+  setTimeout(type, deleting ? 40 : 70);
+}
+type();
+
+// ── SCROLL SPY ──
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => observer.observe(s));
+
+// ── FADE IN ──
+const fadeObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-in').forEach(el => fadeObs.observe(el));
+</script>
+</body>
+</html>
