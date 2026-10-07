@@ -196,13 +196,158 @@
     "At DataRobot, I run an LLM platform serving more than ten thousand inferences a day at ninety-nine point five percent uptime. I built LangGraph agents and a RAG pipeline that improved retrieval accuracy by forty percent, and I cut inference costs by thirty-five percent. " +
     "At Yellow dot A I, I built a Claude-powered assistant and reduced hallucinations from eight percent to two. At Accenture, I built machine learning pipelines for healthcare and banking clients. " +
     "I'm looking for AI and machine learning engineer, generative AI engineer, and forward deployed engineer roles, full-time, W2, or C2C, and I'm open to relocating anywhere in the US. Thanks for stopping by.";
-  function reset() { speaking = false; il.textContent = "Hear my intro"; }
+  var hIntro = document.getElementById("heroIntro"), hl = hIntro ? hIntro.querySelector("span") : null;
+  function reset() { speaking = false; window.__hySpeaking = false; il.textContent = "Hear my intro"; if (hl) hl.textContent = "Hear my intro"; }
+  window.__hyIntroReset = reset;
   if (synth && typeof SpeechSynthesisUtterance !== "undefined") {
     pick(); try { synth.addEventListener("voiceschanged", pick); } catch (e) {}
     introBtn.hidden = false;
+    if (hIntro) { hIntro.hidden = false; hIntro.addEventListener("click", function () { introBtn.click(); }); }
     introBtn.addEventListener("click", function () {
       if (speaking) { synth.cancel(); reset(); return; }
-      try { synth.cancel(); var u = new SpeechSynthesisUtterance(INTRO); if (voice) u.voice = voice; u.pitch = .95; u.onend = u.onerror = reset; synth.speak(u); speaking = true; il.textContent = "Stop"; } catch (e) { reset(); }
+      try { synth.cancel(); var u = new SpeechSynthesisUtterance(INTRO); if (voice) u.voice = voice; u.pitch = .95; u.onend = u.onerror = reset; synth.speak(u); speaking = true; window.__hySpeaking = true; il.textContent = "Stop"; if (hl) hl.textContent = "Stop"; } catch (e) { reset(); }
     });
   }
+})();
+
+// ---------- Interactive hero character: reacts to left / center / right cursor zones ----------
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  if (!$("dev")) return;
+  /* ---------- Interactive character ---------- */
+  var $ = function (id) { return document.getElementById(id); };
+  var head = $("head"), pupils = $("pupils"), eyes = $("eyes"), brows = $("brows");
+  var mouthN = $("mouthN"), mouthS = $("mouthS"), headset = $("headset"), neckset = $("neckset");
+  var typing = $("typing"), typeR = $("typeR"), arm = $("arm"), forearm = $("forearm"), finger = $("finger");
+  var workCta = $("workCta"), bubble = $("bubble"), cue = $("cue"), hero = $("hello"), svg = $("dev");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var WORK = { turn: 0, down: 1, eyeX: 0, eyeY: 1, brow: 0, mouth: 0, headset: 0, arm: 0, wave: 0, point: 0 };
+  var cur = Object.assign({}, WORK), tgt = Object.assign({}, WORK);
+  function pose(p) { Object.assign(tgt, p); }
+
+  var seq = 0, timers = [];
+  function play(steps) {
+    seq++; timers.forEach(clearTimeout); timers = [];
+    steps.forEach(function (s) { timers.push(setTimeout(s[1], s[0])); });
+  }
+  var synth2 = window.speechSynthesis, voiceOn = false, vbtn = $("voiceToggle"), cv = null;
+  function pickV() { var vs = synth2.getVoices().filter(function (v) { return /^en/i.test(v.lang); }); cv = vs.filter(function (v) { return /(male|david|guy|daniel|aaron|alex|rishi|ravi|arthur|tom|ryan|andrew|christopher|eric)/i.test(v.name) && !/female/i.test(v.name); })[0] || vs[0] || null; }
+  function speak(text) {
+    if (!synth2) return;
+    try {
+      synth2.cancel(); if (window.__hyIntroReset) window.__hyIntroReset();
+      var u = new SpeechSynthesisUtterance(text); if (cv) u.voice = cv; u.pitch = .95;
+      u.onstart = function () { window.__hySpeaking = true; };
+      u.onend = u.onerror = function () { window.__hySpeaking = false; };
+      synth2.speak(u); window.__hySpeaking = true;
+    } catch (e) { window.__hySpeaking = false; }
+  }
+  if (synth2 && typeof SpeechSynthesisUtterance !== "undefined" && vbtn) {
+    pickV(); try { synth2.addEventListener("voiceschanged", pickV); } catch (e) {}
+    vbtn.hidden = false;
+    vbtn.addEventListener("click", function () {
+      voiceOn = !voiceOn;
+      vbtn.setAttribute("aria-pressed", voiceOn);
+      vbtn.querySelector("span").textContent = voiceOn ? "Voice on" : "Voice off";
+      if (voiceOn) speak("Voice on. Move your cursor around to say hi.");
+      else { synth2.cancel(); window.__hySpeaking = false; }
+    });
+  }
+  var SPOKEN = { "Welcome to my portfolio.": "Welcome to my portfolio!" };
+  function say(text) {
+    if (text && voiceOn) speak(SPOKEN[text] || text);
+    if (!text) { bubble.classList.remove("show"); return; }
+    bubble.classList.remove("show");
+    setTimeout(function () { bubble.textContent = text; bubble.classList.add("show"); }, 120);
+  }
+
+  var state = "work", lastGreet = -1e9;
+  function backToWork(delay) {
+    return [delay, function () {
+      state = "work"; say(""); cue.classList.remove("lit"); workCta.classList.remove("lit");
+      pose({ arm: 0, wave: 0, point: 0, mouth: 0, brow: 0 });
+      timers.push(setTimeout(function () { pose(WORK); }, 500));
+    }];
+  }
+  function look(side) {
+    state = side;
+    var d = side === "left" ? -1 : 1;
+    pose({ turn: d, down: 0, eyeX: d, eyeY: 0, brow: .5, mouth: 0, arm: 0, wave: 0, point: 0 });
+    say(side === "left" ? "Looking over here?" : "Something interesting over there?");
+    play([backToWork(2600)]);
+  }
+  function greet() {
+    state = "center";
+    if (performance.now() - lastGreet < 5000) {
+      pose({ turn: 0, down: 0, eyeX: 0, eyeY: 0, brow: .6, mouth: 1 });
+      say("Hey, it's you!");
+      play([backToWork(3000)]);
+      return;
+    }
+    lastGreet = performance.now();
+    pose({ turn: 0, down: 0, eyeX: 0, eyeY: 0, brow: 1, mouth: .55, arm: 0, wave: 0, point: 0 });
+    say("Hey, it's you!");
+    play([
+      [600, function () { pose({ headset: 1 }); }],
+      [1400, function () { pose({ arm: 1, wave: 1, mouth: 1, brow: .6 }); say("Welcome to my portfolio."); }],
+      [3500, function () { pose({ wave: 0, point: 1 }); say("Come see what I've been building."); cue.classList.add("lit"); workCta.classList.add("lit"); }],
+      [6000, function () { pose({ point: 0, arm: 0 }); }],
+      backToWork(8200)
+    ]);
+  }
+
+  /* zones: left / center / right thirds, with a little hysteresis */
+  var zone = null;
+  var touchMode = function () { return window.matchMedia("(max-width: 860px), (hover: none)").matches; };
+  hero.addEventListener("mousemove", function (e) {
+    if (touchMode()) return;
+    var r = hero.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, m = .03;
+    var z = zone;
+    if (x < .36 - (zone === "left" ? -m : m)) z = "left";
+    else if (x > .64 + (zone === "right" ? -m : m)) z = "right";
+    else if (x > .36 + m && x < .64 - m) z = "center";
+    if (z !== zone) { zone = z; z === "center" ? greet() : look(z); }
+  });
+  hero.addEventListener("mouseleave", function () { zone = null; });
+  svg.addEventListener("click", function () { lastGreet = -1e9; greet(); });
+
+  /* render loop: ease every value toward its target */
+  var t0 = performance.now(), last = t0;
+  function clamp(v) { return Math.max(0, Math.min(1, v)); }
+  function frame(now) {
+    var dt = Math.min(64, now - last) / 1000; last = now;
+    var k = reduce ? 1 : 1 - Math.exp(-dt * 7);
+    for (var key in tgt) cur[key] += (tgt[key] - cur[key]) * k;
+    var t = now - t0;
+
+    head.setAttribute("transform", "translate(" + (cur.turn * 10) + " " + (cur.down * 6) + ") rotate(" + (cur.turn * 5) + " 210 200)");
+    pupils.setAttribute("transform", "translate(" + (cur.eyeX * 4) + " " + (cur.eyeY * 2.6) + ")");
+    var blink = (t % 3900) < 130 ? .12 : 1;
+    eyes.setAttribute("transform", "translate(0 178) scale(1 " + blink * (1 + cur.brow * .15) + ") translate(0 -178)");
+    brows.setAttribute("transform", "translate(0 " + (-cur.brow * 6) + ")");
+    var mo = window.__hySpeaking ? Math.max(cur.mouth, .35 + .65 * Math.abs(Math.sin(t * .02))) : cur.mouth;
+    mouthN.setAttribute("opacity", clamp(1 - mo * 1.6));
+    mouthS.setAttribute("opacity", clamp(mo * 1.6 - .2));
+    mouthS.setAttribute("transform", "translate(0 212) scale(1 " + (.4 + mo * .6) + ") translate(0 -212)");
+
+    headset.setAttribute("opacity", clamp(1 - cur.headset * 2));
+    headset.setAttribute("transform", "translate(0 " + (-cur.headset * 34) + ")");
+    neckset.setAttribute("opacity", clamp(cur.headset * 2 - 1));
+
+    var bob = reduce ? 0 : Math.sin(t * .028) * 1.6 * cur.down;
+    typing.setAttribute("transform", "translate(0 " + bob + ")");
+    typeR.setAttribute("opacity", clamp(1 - cur.arm * 1.5));
+    arm.setAttribute("opacity", clamp(cur.arm * 1.4));
+    arm.setAttribute("transform", "translate(0 " + ((1 - cur.arm) * 40) + ")");
+    var wag = reduce ? 0 : Math.sin(t * .012) * 22 * cur.wave;
+    forearm.setAttribute("transform", "rotate(" + (cur.point * 138 + wag) + " 338 262)");
+    finger.setAttribute("opacity", clamp(cur.point * 1.5 - .3));
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  /* phones: play the greeting once on arrival */
+  if (touchMode()) setTimeout(greet, 1200);
 })();
