@@ -79,6 +79,7 @@
     ["hire","Work authorization","My resume doesn't list work authorization details, so I'd rather confirm them with you directly at harishyeluri8800@gmail.com or +1 (913) 553-0359. I'm open to full-time, W2 and C2C roles.","visa sponsorship authorization h1b opt citizen"],
     ["hire","Availability","I'm open to work now and can agree a start date with you directly.","notice start availability join available"],
     ["card","Remote","I currently work remotely for DataRobot, I'm comfortable onsite or hybrid, and I'll relocate anywhere in the US.","remote onsite hybrid office"],
+    ["hire","Hours","I'm available for calls and interviews Monday to Friday, 9:00 AM to 5:00 PM Central Time. Reach me at harishyeluri8800@gmail.com or +1 (913) 553-0359.","hours time call schedule interview timezone central cst weekday"],
     ["card","Travel","I'm open to 100% travel, which suits forward deployed and client-facing roles.","travel travelling traveling client site onsite"],
     ["hire","Contact","Email harishyeluri8800@gmail.com, call +1 (913) 553-0359, or connect on LinkedIn at linkedin.com/in/harish8800. I'm happy to send my resume.","contact email phone call linkedin resume reach"],
     ["dep-dr","Leadership","I lead through technical ownership: I'm the technical owner of the LLM and agentic AI workstreams at DataRobot, I drove the move to LangGraph, and I mentor 4 junior engineers.","lead leadership senior owner"],
@@ -136,6 +137,7 @@
     [/\b(salary|compensation|pay\b|pay rate|hourly|bill rate|ctc|expectation|package)/i, ["Compensation", "Work terms"]],
     [/\b(visa|sponsor|work authori[sz]ation|authori[sz]ed to work|h-?1b|opt\b|green card|citizen|ead\b|gc\b)/i, ["Work authorization", "Work terms"]],
     [/\b(notice|start date|when can|start working|available to start|availability|joining|join)/i, ["Availability", "Work terms"]],
+    [/\b(hours|best time|what time|time ?zone|when (can|could|should) (i|we) (call|reach|talk|speak|meet|schedule)|schedule (a|an) (call|interview|meeting)|available (for|to) (a )?(call|talk|interview)|working hours|office hours)/i, ["Hours", "Contact"]],
     [/\b(travel|travell?ing|client sites?|on the road)/i, ["Travel", "Location"]],
     [/\b(relocat|move to|onsite|on-site|hybrid|remote|where (is|are) (he|you)|based in|location)/i, ["Location", "Remote"]],
     [/\b(w-?2|c2c|1099|contract|full[- ]?time|corp to corp|employment type)/i, ["Work terms", "Availability"]],
@@ -571,4 +573,42 @@
   }
   window.addEventListener("scroll", function () { if (!tick) { tick = true; requestAnimationFrame(check); } }, { passive: true });
   check();
+})();
+
+// ---------- Availability hours: Mon to Fri, 9:00 AM to 5:00 PM Central, shown live in the visitor's time too ----------
+(function () {
+  var TZ = "America/Chicago", OPEN = 9, CLOSE = 17;
+  var status = document.querySelectorAll("[data-hours-status]"), local = document.querySelectorAll("[data-hours-local]");
+  if (!status.length && !local.length) return;
+  function partsIn(date) {
+    var p = {}; new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", hour12: false })
+      .formatToParts(date).forEach(function (x) { p[x.type] = x.value; });
+    return { wd: p.weekday, y: +p.year, mo: +p.month, d: +p.day, h: +p.hour % 24, mi: +p.minute };
+  }
+  function chicagoToDate(y, mo, d, h) {
+    var guess = new Date(Date.UTC(y, mo - 1, d, h, 0));
+    var p = partsIn(guess), asUtc = Date.UTC(p.y, p.mo - 1, p.d, p.h, p.mi);
+    return new Date(guess.getTime() - (asUtc - guess.getTime()));
+  }
+  function tick() {
+    try {
+      var now = new Date(), p = partsIn(now), weekday = ["Mon","Tue","Wed","Thu","Fri"].indexOf(p.wd) >= 0, mins = p.h * 60 + p.mi;
+      var open = weekday && mins >= OPEN * 60 && mins < CLOSE * 60, text;
+      if (open) text = "Available now";
+      else {
+        var days = { Sun: 1, Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 2 }[p.wd];
+        if (weekday && mins >= CLOSE * 60) days = p.wd === "Fri" ? 3 : 1;
+        var when = days === 0 ? "today" : days === 1 ? "tomorrow" : "Monday";
+        text = "Back " + when + " at 9:00 AM CT";
+      }
+      status.forEach(function (el) { el.textContent = text; el.classList.toggle("open", open); });
+      var myTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (myTz && myTz !== TZ) {
+        var a = chicagoToDate(p.y, p.mo, p.d, OPEN), b = chicagoToDate(p.y, p.mo, p.d, CLOSE);
+        var f = function (d) { return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); };
+        local.forEach(function (el) { el.textContent = "That's " + f(a) + " to " + f(b) + " your time"; });
+      }
+    } catch (e) {}
+  }
+  tick(); setInterval(tick, 60000);
 })();

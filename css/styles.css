@@ -327,3 +327,16 @@ footer { padding-block: 28px 44px; display: flex; justify-content: space-between
 .sugs .sug-more { border-style: dashed; color: var(--accent); }
 .badge-body .status { flex-wrap: wrap; justify-content: center; row-gap: 2px; text-align: center; }
 .badge-body .status b, .badge-body .status span { white-space: nowrap; }
+
+/* availability hours */
+.hours-live { display: inline-flex; align-items: center; gap: 6px; font: 500 11px var(--mono); padding: 2px 8px; border-radius: 999px; background: var(--sunk); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; text-transform: none; letter-spacing: 0; }
+.hours-live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
+.hours-live.open { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
+.hours-live.open::before { background: var(--ok); }
+.hours-live:empty { display: none; }
+.hours-local { display: block; font: 400 12px var(--sans); color: var(--muted); margin-top: 2px; }
+.hours-local:empty { display: none; }
+.mc dd .hours-live { margin-left: 6px; vertical-align: 1px; }
+.contact-rows .hours-live { text-transform: none; letter-spacing: 0; font: 500 11px var(--mono); }
+.contact-rows .hours-live.open { color: var(--ok); }
+.hours-row b { text-align: right; }
