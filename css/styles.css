@@ -1,15 +1,16 @@
 /* Harish Yeluri · portfolio styles */
 /* Layout: the portfolio as a production AI console. Ask box (in-browser BM25 over the resume) up top, then metrics, deployment log, eval table, dependency manifest, model card, hire endpoint. */
 :root {
-  --bg: #EEF0F3;
+  --bg: #F6F1F3;
   --panel: #FFFFFF;
-  --sunk: #F5F6F8;
+  --sunk: #FAF6F7;
   --ink: #12141A;
   --muted: #5E6573;
   --faint: #8A909C;
-  --line: #DCE0E6;
-  --accent: #2747F5;
-  --accent-soft: #E6EAFE;
+  --line: #EADDE2;
+  --accent: #8A3350;
+  --accent-soft: #F6E7EC;
+  --sh-glow: #FFFFFF; --sh-edge1: #F3DCE4; --sh-edge2: #D9A9BA; --sh-lid: #D3D6DD; --sh-lid-edge: #B6BBC6; --sh-desk: #E9D3DB;
   --ok: #0E8A5F;
   --ok-soft: #DDF3EA;
   --warn: #B26A00;
@@ -20,14 +21,14 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0C0E12; --panel: #14171D; --sunk: #191D24; --ink: #ECEEF2; --muted: #9AA1AE; --faint: #6D7480;
-    --line: #262B34; --accent: #7D92FF; --accent-soft: #1C2347; --ok: #3DD29A; --ok-soft: #12302A; --warn: #F0B04A; --hl: #4A3F12; --on-accent: #0C0E12;
+    --bg: #130D10; --panel: #1D1519; --sunk: #231A1F; --ink: #ECEEF2; --muted: #9AA1AE; --faint: #6D7480;
+    --line: #382930; --accent: #E59BB4; --accent-soft: #3A2129; --sh-glow: #3A2730; --sh-edge1: #2A1A21; --sh-edge2: #4B2232; --sh-lid: #C3C7D0; --sh-lid-edge: #9EA4B0; --sh-desk: #2E1E25; --ok: #3DD29A; --ok-soft: #12302A; --warn: #F0B04A; --hl: #4A3F12; --on-accent: #0C0E12;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0C0E12; --panel: #14171D; --sunk: #191D24; --ink: #ECEEF2; --muted: #9AA1AE; --faint: #6D7480;
-  --line: #262B34; --accent: #7D92FF; --accent-soft: #1C2347; --ok: #3DD29A; --ok-soft: #12302A; --warn: #F0B04A; --hl: #4A3F12; --on-accent: #0C0E12;
+  --bg: #130D10; --panel: #1D1519; --sunk: #231A1F; --ink: #ECEEF2; --muted: #9AA1AE; --faint: #6D7480;
+  --line: #382930; --accent: #E59BB4; --accent-soft: #3A2129; --sh-glow: #3A2730; --sh-edge1: #2A1A21; --sh-edge2: #4B2232; --sh-lid: #C3C7D0; --sh-lid-edge: #9EA4B0; --sh-desk: #2E1E25; --ok: #3DD29A; --ok-soft: #12302A; --warn: #F0B04A; --hl: #4A3F12; --on-accent: #0C0E12;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -244,4 +245,51 @@ footer { padding-block: 28px 44px; display: flex; justify-content: space-between
   .ask-form { flex-direction: column; }
   .ask-form button { padding: 11px; }
   section.sec { padding-block: 40px; }
+}
+
+/* ---------- Interactive hero (from the first portfolio) ---------- */
+.sh { position: relative; overflow: hidden; background: radial-gradient(ellipse 60% 70% at 50% 52%, var(--sh-glow) 0%, var(--sh-glow) 30%, var(--sh-edge1) 68%, var(--sh-edge2) 100%); padding-block: 8px 26px; }
+.sh-inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr); align-items: center; gap: 24px; min-height: 540px; }
+.sh-intro { display: grid; gap: 14px; align-content: center; justify-items: start; }
+.sh-intro .status span:last-child { white-space: nowrap; }
+.sh-name { font-size: clamp(40px, 4.6vw, 62px); line-height: .98; letter-spacing: -.045em; }
+.sh-who { font: 500 12.5px/1.6 var(--mono); color: var(--accent); }
+.sh-text { color: var(--muted); max-width: 36ch; }
+.sh-ctas { display: flex; gap: 8px; flex-wrap: wrap; }
+.sh-ctas .btn.lit { box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent); transform: translateY(-2px); }
+.sh-ctas .btn { transition: box-shadow .4s, transform .4s; }
+.btn.pri { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.sh-hint { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.sh-hint svg { width: 16px; height: 16px; color: var(--accent); flex: none; }
+.touch-only { display: none; }
+.sh-figure { display: flex; justify-content: center; }
+.sh-figure svg { width: 100%; max-width: 520px; height: auto; display: block; }
+.sh-react { display: flex; align-items: center; min-height: 110px; }
+.sh-bubble { font: 500 clamp(18px, 1.9vw, 24px)/1.25 var(--sans); letter-spacing: -.02em; padding: 14px 18px; border-radius: 16px 16px 16px 4px; background: var(--panel); border: 1px solid var(--line); box-shadow: 0 12px 28px -20px color-mix(in srgb, var(--accent) 70%, transparent); opacity: 0; transform: translateY(6px); transition: opacity .35s, transform .35s; max-width: 17ch; }
+.sh-bubble.show { opacity: 1; transform: none; }
+.sh-cue { display: flex; flex-direction: column; align-items: center; gap: 6px; width: max-content; margin: 0 auto; font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-decoration: none; }
+.sh-cue i { width: 1px; height: 24px; background: currentColor; display: block; }
+.sh-cue.lit { color: var(--accent); }
+@media (prefers-reduced-motion: no-preference) {
+  .sh-hint svg { animation: shNudge 2.4s ease-in-out infinite; }
+  @keyframes shNudge { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+  .sh-cue i { animation: shDrip 1.8s ease-in-out infinite; transform-origin: top; }
+  @keyframes shDrip { 0%,100% { transform: scaleY(.4); } 50% { transform: scaleY(1); } }
+}
+.ask-title { margin-top: 18px; font-size: clamp(30px, 3.6vw, 44px); line-height: 1.02; letter-spacing: -.04em; }
+.fde { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.fde article { padding: 20px; display: grid; gap: 10px; align-content: start; border-top: 3px solid var(--accent); }
+.fde h3 { font-size: 19px; letter-spacing: -.02em; line-height: 1.2; }
+.fde p { color: var(--muted); font-size: 14px; }
+@media (max-width: 860px) {
+  .sh-inner { grid-template-columns: minmax(0, 1fr); min-height: 0; text-align: center; gap: 8px; padding-top: 18px; }
+  .sh-intro { justify-items: center; }
+  .sh-text { margin-inline: auto; }
+  .sh-ctas { justify-content: center; }
+  .sh-figure svg { max-width: 400px; margin-top: -56px; }
+  .sh-react { justify-content: center; min-height: 64px; }
+  .sh-bubble { border-radius: 16px; }
+  .mouse-only { display: none; }
+  .touch-only { display: inline; }
+  .fde { grid-template-columns: minmax(0, 1fr); }
 }
