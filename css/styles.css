@@ -325,3 +325,5 @@ footer { padding-block: 28px 44px; display: flex; justify-content: space-between
 
 .sug-label { width: 100%; font: 500 11px var(--mono); color: var(--faint); letter-spacing: .04em; }
 .sugs .sug-more { border-style: dashed; color: var(--accent); }
+.badge-body .status { flex-wrap: wrap; justify-content: center; row-gap: 2px; text-align: center; }
+.badge-body .status b, .badge-body .status span { white-space: nowrap; }
