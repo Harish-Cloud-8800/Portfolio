@@ -69,75 +69,161 @@
     ["stack","Languages","Python is my main language; I also use SQL, TypeScript, JavaScript, Java, C#, C++, Bash and PowerShell.","python languages programming sql typescript java c# c++ code coding"],
     ["dep-dr","Forward deployed fit","Forward deployed work is what I already do: learn the customer's problem, connect AI to the systems they already use, and stay with it in production until it runs reliably.","forward deployed fde why fit customer field consulting solutions engineer embedded"]
   ];
+  /* recruiter questions the resume answers indirectly; contact-only where the resume is silent */
+  KB.push(
+    ["summary","Strengths","My strengths are taking generative AI from prototype to production and keeping it reliable and affordable at scale (10K+ inferences a day, 99.5% uptime, 35% lower cost), and working directly with the people who use it.","strength strengths good best superpower stand out unique"],
+    ["summary","Growth","Each role has pushed me toward more ownership, and now I want to own customer-facing AI systems end to end. I'm happy to talk through specific growth areas in an interview.","weakness weaknesses improve growth challenge"],
+    ["summary","Why hire","I've already done the core of these roles in production: I build agents and RAG systems, run the LLM platform they depend on, cut its cost 35% while holding 99.5% uptime, and work directly with stakeholders from requirements to rollout.","why hire fit choose"],
+    ["metrics","Proudest result","The result I'm proudest of is the DataRobot LLM platform: 10,000+ inferences a day across GPT-4, Claude and Mistral at 99.5% uptime, with inference cost down 35% and retrieval accuracy up 40%.","achievement proud accomplishment impact win"],
+    ["hire","Compensation","I'm happy to discuss compensation directly; it depends on the role, location and whether it's full-time, W2 or C2C. Reach me at harishyeluri8800@gmail.com or +1 (913) 553-0359.","salary compensation pay rate expectation"],
+    ["hire","Work authorization","My resume doesn't list work authorization details, so I'd rather confirm them with you directly at harishyeluri8800@gmail.com or +1 (913) 553-0359. I'm open to full-time, W2 and C2C roles.","visa sponsorship authorization h1b opt citizen"],
+    ["hire","Availability","I'm open to work now and can agree a start date with you directly.","notice start availability join available"],
+    ["card","Remote","I currently work remotely for DataRobot, I'm comfortable onsite or hybrid, and I'll relocate anywhere in the US.","remote onsite hybrid office"],
+    ["hire","Contact","Email harishyeluri8800@gmail.com, call +1 (913) 553-0359, or connect on LinkedIn at linkedin.com/in/harish8800. I'm happy to send my resume.","contact email phone call linkedin resume reach"],
+    ["dep-dr","Leadership","I lead through technical ownership: I'm the technical owner of the LLM and agentic AI workstreams at DataRobot, I drove the move to LangGraph, and I mentor 4 junior engineers.","lead leadership senior owner"],
+    ["dep-dr","Current role","I'm currently a Machine Learning Engineer at DataRobot (since November 2024, remote), owning a production LLM platform and agentic AI workflows.","current currently now present employer"],
+    ["card","Looking for","I want roles where I own AI systems end to end, close to the people who use them: AI/ML Engineer, Generative AI Engineer or Forward Deployed Engineer.","looking next goal career want"],
+    ["deployments","Industries","I've built AI for healthcare (de-identified patient data under PHI controls), banking (churn prediction and financial data pipelines) and enterprise customer support (AI assistants at Yellow.ai).","industry industries domain healthcare banking finance"],
+    ["summary","Ownership","I'm at my best when a problem has no playbook and I have to work out the right approach myself. I finished my master's while working full time at DataRobot.","startup ambiguity ownership playbook"],
+    ["evals","Projects","Highlights: LangGraph agent workflows, a hybrid-search RAG pipeline (+40% retrieval accuracy), a multi-model LLM platform (−35% cost), a Claude support assistant (hallucinations 8% to 2%), a quantized Llama 2 (80% smaller) and a churn model (0.91 AUC-ROC).","projects portfolio built"],
+    ["dep-dr","Testing","I test what I ship: pytest unit and integration tests, Postman API checks, Selenium end-to-end tests and Locust and JMeter load tests in CI, plus guardrail testing on LLM outputs.","testing test qa quality pytest selenium load"],
+    ["dep-dr","Prompting","Prompt engineering is part of my daily work; prompt optimization was one of the levers behind the 35% inference cost cut.","prompt prompting prompt engineering"],
+    ["dep-dr","Security","I implement access controls, logging, model versioning and LLM output guardrails for security and Responsible AI requirements, and I've handled PHI-regulated healthcare data.","security compliance responsible governance privacy"]
+  );
   var STOP = "a an the is are was were be been of to in on for with and or by at as it its this that what which who whom how does do did has have had he his him harish i me my you your about can could would should any some tell give show experience know worked work".split(" ");
-  var SYN = { llm: "llm gpt claude", genai: "generative llm", gen: "generative", cloud: "aws azure gcp", customer: "stakeholder client", customers: "stakeholder client", money: "cost", cheaper: "cost", fast: "latency", speed: "latency", reliable: "uptime reliability", ml: "machine learning model", job: "roles", visa: "", salary: "", pay: "" };
+  var SYN = { llm: "llm gpt claude", genai: "generative llm", gen: "generative", cloud: "aws azure gcp", customer: "stakeholder client", customers: "stakeholder client", money: "cost", cheaper: "cost", fast: "latency", speed: "latency", reliable: "uptime reliability", ml: "machine learning model", job: "roles" };
   function stem(w) { return w.replace(/(ing|ed|es|s)$/, function (m) { return w.length > 4 ? "" : m; }); }
-  function toks(s) {
-    return s.toLowerCase().replace(/[^a-z0-9#+.\-\s]/g, " ").split(/\s+/).filter(function (w) { return w && STOP.indexOf(w) < 0; }).map(stem);
-  }
+  function toks(s) { return s.toLowerCase().replace(/[^a-z0-9#+.\-\s]/g, " ").split(/\s+/).filter(function (w) { return w && STOP.indexOf(w) < 0; }).map(stem); }
   var docs = KB.map(function (k) { return toks(k[1] + " " + k[2] + " " + k[3] + " " + k[3]); });
   var N = docs.length, avg = docs.reduce(function (a, d) { return a + d.length; }, 0) / N, df = {};
   docs.forEach(function (d) { var seen = {}; d.forEach(function (w) { if (!seen[w]) { seen[w] = 1; df[w] = (df[w] || 0) + 1; } }); });
   function bm25(q) {
-    var qt = []; toks(q).forEach(function (w) { qt.push(w); if (SYN[w] !== undefined) toks(SYN[w]).forEach(function (x) { qt.push(x); }); });
+    var qt = []; toks(q).forEach(function (w) { qt.push(w); if (SYN[w]) toks(SYN[w]).forEach(function (x) { qt.push(x); }); });
     var k1 = 1.4, b = .75;
     return docs.map(function (d, i) {
       var s = 0, tf = {};
       d.forEach(function (w) { tf[w] = (tf[w] || 0) + 1; });
-      qt.forEach(function (w) {
-        if (!tf[w]) return;
-        var idf = Math.log(1 + (N - df[w] + .5) / (df[w] + .5));
-        s += idf * (tf[w] * (k1 + 1)) / (tf[w] + k1 * (1 - b + b * d.length / avg));
-      });
+      qt.forEach(function (w) { if (!tf[w]) return; var idf = Math.log(1 + (N - df[w] + .5) / (df[w] + .5)); s += idf * (tf[w] * (k1 + 1)) / (tf[w] + k1 * (1 - b + b * d.length / avg)); });
       return { i: i, s: s };
     }).sort(function (a, b) { return b.s - a.s; });
   }
-  $("aTrace").innerHTML = '<span>retrieved <b>3</b> chunks</span><span>index <b>' + N + '</b> chunks</span><span>model <b>none: extractive</b></span>';
+  function kb(title) { for (var i = 0; i < KB.length; i++) if (KB[i][1] === title) return i; return -1; }
+  function item(i, why) { return { id: KB[i][0], title: KB[i][1], text: KB[i][2], tag: why }; }
 
-  var SUGS = ["What has he built with agents?", "Biggest cost win?", "Has he worked directly with customers?", "How does he reduce hallucinations?", "Cloud experience?", "Is he open to relocation and C2C?", "Why Forward Deployed?", "Certifications?"];
+  /* common recruiter questions, checked before keyword search */
+  var INTENTS = [
+    [/\b(tell me about (yourself|him|harish)|who (are you|is (he|harish))|introduc|overview|summar|background|elevator pitch|about (him|you|harish)\b)/i, ["Summary", "Experience", "Looking for"]],
+    [/\b(strength|good at|best at|superpower|stand out|unique|different from)/i, ["Strengths", "DataRobot · platform", "Forward deployed fit"]],
+    [/\b(weakness|area to improve|improvement|growth area)/i, ["Growth", "Strengths"]],
+    [/\b(why (should|would|do) (we|i|you)|why hire|why (him|you|harish)|good fit|right fit)/i, ["Why hire", "Forward deployed fit", "Proudest result"]],
+    [/\b(achievement|proud|accomplish|biggest (win|impact)|impact|best work)/i, ["Proudest result", "DataRobot · RAG", "Yellow.ai · RAG"]],
+    [/\b(salary|compensation|pay\b|pay rate|hourly|bill rate|ctc|expectation|package)/i, ["Compensation", "Work terms"]],
+    [/\b(visa|sponsor|work authori[sz]ation|authori[sz]ed to work|h-?1b|opt\b|green card|citizen|ead\b|gc\b)/i, ["Work authorization", "Work terms"]],
+    [/\b(notice|start date|when can|start working|available to start|availability|joining|join)/i, ["Availability", "Work terms"]],
+    [/\b(relocat|move to|onsite|on-site|hybrid|remote|where (is|are) (he|you)|based in|location)/i, ["Location", "Remote"]],
+    [/\b(w-?2|c2c|1099|contract|full[- ]?time|corp to corp|employment type)/i, ["Work terms", "Availability"]],
+    [/\b(contact|email|e-mail|phone|reach (him|you|out)|call (him|you)|linkedin|resume|cv)\b/i, ["Contact"]],
+    [/\b(customer|client|forward deployed|fde\b|field)/i, ["Forward deployed fit", "DataRobot · stakeholders", "Yellow.ai · API adapters"]],
+    [/\b(lead|leadership|mentor|manage|senior)/i, ["Leadership", "DataRobot · mentoring"]],
+    [/\b(team ?work|collaborat|communicat|stakeholder|presentation)/i, ["DataRobot · stakeholders", "Accenture · stakeholders", "Yellow.ai · knowledge sharing"]],
+    [/\b(current(ly)?|right now|present (role|job)|where (does|do) (he|you) work|employer)/i, ["Current role"]],
+    [/\b(looking for|next role|what (role|kind|type)|career goal|goals|why (is he|are you) looking|leaving)/i, ["Looking for", "Roles"]],
+    [/\b(industr|domain|sector|healthcare|banking|finance|fintech)/i, ["Industries", "Accenture · healthcare"]],
+    [/\b(startup|ambigu|playbook|fast[- ]paced|ownership|end[- ]to[- ]end)/i, ["Ownership", "DataRobot · platform"]],
+    [/\b(projects?|portfolio|what has he built|what have you built)\b/i, ["Projects"]],
+    [/\b(test|testing|qa\b|quality assurance)/i, ["Testing", "DataRobot · evaluation"]],
+    [/\b(prompt)/i, ["Prompting"]],
+    [/\b(security|secure|compliance|hipaa|phi\b|privacy|responsible ai|governance)/i, ["Security", "Accenture · healthcare"]],
+    [/\b(years|how long|how much experience|experienced)/i, ["Experience", "Current role"]],
+    [/\b(education|degree|master|bachelor|university|college|gpa|cgpa)/i, ["Education"]],
+    [/\b(certif)/i, ["Certifications"]]
+  ];
+
+  /* any of the 119 skills, by name or common alias */
+  var FAMNAME = { lang: "languages", llm: "LLM and generative AI", agent: "agent", ml: "ML and deep learning", cloud: "cloud", ops: "MLOps and infrastructure", data: "data and backend", eval: "evaluation and testing", prac: "working practices" };
+  var NOT_PROD = ["C#", ".NET", "ASP.NET Core", "TensorFlow"];
+  var ALIAS = { "k8s": "Kubernetes", "kube": "Kubernetes", "gcp": "Google Cloud", "google cloud platform": "Google Cloud", "amazon web services": "AWS", "js": "JavaScript", "node": "JavaScript", "ts": "TypeScript", "sklearn": "scikit-learn", "scikit": "scikit-learn", "huggingface": "Hugging Face", "transformers": "Hugging Face", "llama": "Llama 3", "gpt": "GPT-4o", "gpt-4": "GPT-4o", "openai": "Azure OpenAI", "chatgpt": "GPT-4o", "anthropic": "Claude", "postgres": "PostgreSQL", "sql server": "SQL", "lora": "LoRA / PEFT", "peft": "LoRA / PEFT", "fine-tuning": "LoRA / PEFT", "finetuning": "LoRA / PEFT", "vector database": "Pinecone", "vector db": "Pinecone", "langsmith": "LangChain", "crew ai": "CrewAI", "auto gen": "AutoGen", "model context protocol": "MCP", "gh actions": "GitHub Actions", "ci/cd": "GitHub Actions", "cicd": "GitHub Actions", "argo": "Argo CD", "w&b": "Weights & Biases", "wandb": "Weights & Biases", "spark": "Spark", "pyspark": "Spark", "react.js": "React", "reactjs": "React", "dotnet": ".NET", "springboot": "Spring Boot", "yolov3": "YOLO", "cv": "Computer vision", "nlp": "Hugging Face", "llmops": "MLflow", "mlops": "MLflow", "docker compose": "Docker", "grafana": "Grafana" };
+  var SK = (window.SKILLS || []).map(function (e) { return { sym: e[0], name: e[1], fam: e[2], note: e[3] }; });
+  function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+  function findSkills(q) {
+    var low = " " + q.toLowerCase() + " ", hits = [], seen = {};
+    function add(name) { if (seen[name]) return; for (var i = 0; i < SK.length; i++) if (SK[i].name === name) { seen[name] = 1; hits.push(SK[i]); return; } }
+    Object.keys(ALIAS).forEach(function (k) { if (new RegExp("[^a-z0-9]" + esc(k) + "[^a-z0-9]").test(low)) add(ALIAS[k]); });
+    SK.forEach(function (s) {
+      var names = [s.name.toLowerCase()].concat(s.name.indexOf(" / ") > 0 ? s.name.toLowerCase().split(" / ") : []);
+      names.forEach(function (n) { if (n.length > 1 && new RegExp("[^a-z0-9]" + esc(n) + "[^a-z0-9]").test(low)) add(s.name); });
+    });
+    return hits.slice(0, 3);
+  }
+  function skillItem(s) {
+    var prod = s.note && NOT_PROD.indexOf(s.name) < 0;
+    var note = s.note ? " " + s.note.replace(/\.?$/, ".") : "";
+    var text = prod ? "Yes, " + s.name + "." + note : "Yes, " + s.name + " is part of my " + FAMNAME[s.fam] + " toolkit." + note;
+    return { id: "stack", title: "Skills · " + s.name, text: text, tag: prod ? "skill · prod" : "skill" };
+  }
+
+  function answer(q) {
+    var out = [], used = {}, how = "";
+    function push(it) { if (it && !used[it.title] && out.length < 3) { used[it.title] = 1; out.push(it); } }
+    for (var n = 0; n < INTENTS.length && out.length < 3; n++) {
+      if (INTENTS[n][0].test(q)) { if (!how) how = "intent"; INTENTS[n][1].forEach(function (t) { var i = kb(t); if (i >= 0) push(item(i, "intent")); }); }
+    }
+    var sk = findSkills(q);
+    if (sk.length) { if (!how) how = "skill"; sk.forEach(function (s) { push(skillItem(s)); }); }
+    var hits = bm25(q), top = hits[0] ? hits[0].s : 0;
+    if (!out.length && top > 0) {
+      how = top >= 2.5 ? "bm25" : "nearest";
+      hits.filter(function (h, i) { return i < 3 && h.s >= Math.max(.6, top * .45); }).forEach(function (h) { push(item(h.i, "bm25 " + h.s.toFixed(2))); });
+    } else if (out.length < 2 && top >= 4) {
+      push(item(hits[0].i, "bm25 " + top.toFixed(2)));
+    }
+    if (!out.length) { how = "fallback"; push(item(kb("Summary"), "fallback")); push(item(kb("Contact"), "fallback")); }
+    return { items: out, how: how, top: top };
+  }
+
+  $("aTrace").innerHTML = '<span>index <b>' + N + '</b> chunks + <b>' + SK.length + '</b> skills</span><span>model <b>none: extractive</b></span>';
+
+  var SUGS = ["Tell me about yourself", "Why should we hire him?", "Biggest achievement?", "Does he know Kubernetes?", "Customer-facing experience?", "Work authorization?", "Salary expectations?", "Open to relocation and C2C?"];
   var sugBox = $("sugs");
   SUGS.forEach(function (s) {
     var b = document.createElement("button"); b.type = "button"; b.textContent = s;
     b.addEventListener("click", function () { $("askInput").value = s; run(s); });
     sugBox.appendChild(b);
   });
+  $("askInput").placeholder = "Ask anything: skills, projects, salary, visa, relocation…";
 
   var aQ = $("aQ"), aA = $("aA"), aSrcs = $("aSrcs"), aTrace = $("aTrace"), job = 0;
-  function srcList(hits) {
+  function srcList(items) {
     aSrcs.innerHTML = "";
-    hits.forEach(function (h, n) {
-      var k = KB[h.i], b = document.createElement("button");
+    items.forEach(function (it, n) {
+      var b = document.createElement("button");
       b.type = "button"; b.className = "src";
-      b.innerHTML = '<span class="n">[' + (n + 1) + ']</span><span class="s"><b>' + k[1] + '</b> · ' + k[2] + '</span><span class="sc">' + h.s.toFixed(2) + '</span>';
-      b.addEventListener("click", function () { go(k[0]); });
+      b.innerHTML = '<span class="n">[' + (n + 1) + ']</span><span class="s"><b>' + it.title + '</b> · ' + it.text + '</span><span class="sc">' + it.tag + '</span>';
+      b.addEventListener("click", function () { go(it.id); });
       aSrcs.appendChild(b);
     });
   }
+  var LEAD = { nearest: "The closest thing in my resume: ", fallback: "That isn't covered in my resume, so I won't make something up. Here's the short version, and I'm glad to answer it directly: " };
   function run(q) {
     q = (q || "").trim(); if (!q) return;
-    var my = ++job, t0 = performance.now();
-    var hits = bm25(q), top = hits[0].s;
-    var keep = hits.filter(function (h, n) { return n < 3 && h.s >= Math.max(1.2, top * .45); });
-    var ms = performance.now() - t0;
+    var my = ++job, t0 = performance.now(), r = answer(q), ms = performance.now() - t0;
     aQ.textContent = q;
-    if (!keep.length) {
-      aA.textContent = "My resume doesn't cover that, so I won't guess. Try asking about agents, RAG, cost, cloud, customers, or the roles I'm looking for.";
-      aTrace.innerHTML = '<span>retrieved <b>0</b> chunks above threshold</span><span>search <b>' + ms.toFixed(2) + ' ms</b></span><span>guardrail <b>no answer</b></span>';
-      aSrcs.innerHTML = ""; return;
-    }
-    aTrace.innerHTML = '<span>retrieved <b>' + keep.length + '</b> chunks</span><span>search <b>' + ms.toFixed(2) + ' ms</b></span><span>top BM25 <b>' + top.toFixed(2) + '</b></span><span>model <b>none: extractive</b></span>';
-    srcList(keep);
-    var parts = keep.map(function (h) { return KB[h.i][2]; });
-    if (reduce) { render(parts, keep, Infinity); return; }
+    var labels = { intent: "recruiter question", skill: "skill lookup", bm25: "BM25 search", nearest: "nearest match", fallback: "not in resume" };
+    aTrace.innerHTML = '<span>route <b>' + labels[r.how] + '</b></span><span>sources <b>' + r.items.length + '</b></span><span>search <b>' + ms.toFixed(2) + ' ms</b></span><span>model <b>none: extractive</b></span>';
+    srcList(r.items);
+    var parts = r.items.map(function (it) { return it.text; });
+    if (LEAD[r.how]) parts[0] = LEAD[r.how] + parts[0];
+    var ids = r.items.map(function (it) { return it.id; });
+    if (reduce) { render(parts, ids, Infinity); return; }
     var total = parts.join(" ").length, shown = 0;
     (function tick() {
       if (my !== job) return;
       shown += 4;
-      render(parts, keep, shown);
-      if (shown < total + parts.length) requestAnimationFrame(tick); else render(parts, keep, Infinity);
+      render(parts, ids, shown);
+      if (shown < total + parts.length) requestAnimationFrame(tick); else render(parts, ids, Infinity);
     })();
   }
-  function render(parts, keep, limit) {
+  function render(parts, ids, limit) {
     aA.innerHTML = ""; var used = 0, done = limit === Infinity;
     for (var n = 0; n < parts.length; n++) {
       var p = parts[n], take = Math.max(0, Math.min(p.length, limit - used));
@@ -146,7 +232,7 @@
       used += p.length + 1;
       if (take === p.length) {
         var c = document.createElement("button"); c.type = "button"; c.className = "cite"; c.textContent = n + 1;
-        (function (id) { c.addEventListener("click", function () { go(id); }); })(KB[keep[n].i][0]);
+        (function (id) { c.addEventListener("click", function () { go(id); }); })(ids[n]);
         aA.appendChild(c);
       }
     }
@@ -154,7 +240,7 @@
   }
   $("askForm").addEventListener("submit", function (e) { e.preventDefault(); run($("askInput").value); });
   aA.querySelectorAll(".cite").forEach(function (c) { c.addEventListener("click", function () { go(c.dataset.go); }); });
-  srcList(bm25("agents langgraph tools mcp crewai").slice(0, 3));
+  srcList(answer("langgraph agents tool calling mcp crewai autogen").items);
 
   /* ---------- dependency manifest ---------- */
   var E = window.SKILLS || [];
