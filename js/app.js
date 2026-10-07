@@ -351,3 +351,17 @@
   /* phones: play the greeting once on arrival */
   if (touchMode()) setTimeout(greet, 1200);
 })();
+
+// ---------- ID badge swings when it scrolls into view ----------
+(function () {
+  var badge = document.getElementById("idBadge");
+  if (!badge || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var done = false, tick = false;
+  function check() {
+    tick = false;
+    if (done) return;
+    if (badge.getBoundingClientRect().top < window.innerHeight * .85) { done = true; badge.classList.add("swing"); }
+  }
+  window.addEventListener("scroll", function () { if (!tick) { tick = true; requestAnimationFrame(check); } }, { passive: true });
+  check();
+})();
