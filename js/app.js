@@ -90,6 +90,16 @@
     ["dep-dr","Prompting","Prompt engineering is part of my daily work; prompt optimization was one of the levers behind the 35% inference cost cut.","prompt prompting prompt engineering"],
     ["dep-dr","Security","I implement access controls, logging, model versioning and LLM output guardrails for security and Responsible AI requirements, and I've handled PHI-regulated healthcare data.","security compliance responsible governance privacy"]
   );
+  KB.push(
+    ["dep-dr","Models used","I've run GPT-4, Claude and Mistral in production at DataRobot, built on the Claude API at Yellow.ai, and fine-tuned Llama 2 with LoRA; I also work with Llama 3, GPT-4o and Gemini.","llm llms models model gpt claude mistral llama gemini"]
+  );
+  (function applyProfile() {
+    var P = window.PROFILE || {}, C = "Reach me at harishyeluri8800@gmail.com or +1 (913) 553-0359.";
+    function set(title, text) { for (var i = 0; i < KB.length; i++) if (KB[i][1] === title) KB[i][2] = text; }
+    if (P.salary) set("Compensation", "My compensation expectation: " + P.salary + ". I'm flexible depending on the role and location. " + C);
+    if (P.workAuthorization) set("Work authorization", "Work authorization: " + P.workAuthorization + ". I'm open to full-time, W2 and C2C roles.");
+    if (P.availability) set("Availability", P.availability.replace(/\.?$/, ".") + " I'm open to work now.");
+  })();
   var STOP = "a an the is are was were be been of to in on for with and or by at as it its this that what which who whom how does do did has have had he his him harish i me my you your about can could would should any some tell give show experience know worked work".split(" ");
   var SYN = { llm: "llm gpt claude", genai: "generative llm", gen: "generative", cloud: "aws azure gcp", customer: "stakeholder client", customers: "stakeholder client", money: "cost", cheaper: "cost", fast: "latency", speed: "latency", reliable: "uptime reliability", ml: "machine learning model", job: "roles" };
   function stem(w) { return w.replace(/(ing|ed|es|s)$/, function (m) { return w.length > 4 ? "" : m; }); }
@@ -112,6 +122,11 @@
 
   /* common recruiter questions, checked before keyword search */
   var INTENTS = [
+    [/\byellow\.?\s?ai\b/i, ["Yellow.ai · assistant", "Yellow.ai · RAG", "Yellow.ai · fine-tuning"]],
+    [/\bdata\s?robot\b/i, ["DataRobot · platform", "DataRobot · agents", "DataRobot · cost"]],
+    [/\baccenture\b/i, ["Accenture · churn", "Accenture · big data", "Accenture · healthcare"]],
+    [/\b(which|what) (llms?|models?|language models?|ai models?)\b|\bllms? (has|have|did)\b/i, ["Models used"]],
+    [/\b(mlops|llmops|devops|infrastructure|deploy(ment)?s?|ci\/?cd|pipelines?)\b/i, ["DataRobot · reliability", "Yellow.ai · MLOps", "DataRobot · data"]],
     [/\b(tell me about (yourself|him|harish)|who (are you|is (he|harish))|introduc|overview|summar|background|elevator pitch|about (him|you|harish)\b)/i, ["Summary", "Experience", "Looking for"]],
     [/\b(strength|good at|best at|superpower|stand out|unique|different from)/i, ["Strengths", "DataRobot · platform", "Forward deployed fit"]],
     [/\b(weakness|area to improve|improvement|growth area)/i, ["Growth", "Strengths"]],
@@ -162,10 +177,98 @@
     return { id: "stack", title: "Skills · " + s.name, text: text, tag: prod ? "skill · prod" : "skill" };
   }
 
-  function answer(q) {
+  /* ---------- typo tolerance: snap misspelled words to known vocabulary ---------- */
+  var VOCAB = {};
+  KB.forEach(function (k) { (k[1] + " " + k[2] + " " + k[3]).toLowerCase().split(/[^a-z0-9+#.]+/).forEach(function (w) { if (w.length > 3) VOCAB[w] = 1; }); });
+  SK.forEach(function (s) { s.name.toLowerCase().split(/[^a-z0-9+#.]+/).forEach(function (w) { if (w.length > 3) VOCAB[w] = 1; }); });
+  ("salary compensation experience experienced years expectation expectations sponsorship authorization relocation relocate remote onsite hybrid " +
+   "available availability notice contact email phone resume strengths strength weakness weaknesses achievement achievements leadership mentor " +
+   "projects certification certifications education degree customer customers client clients stakeholder stakeholders kubernetes python " +
+   "langgraph langchain machine learning generative engineer forward deployed hire hiring interview location based contract fulltime").split(" ").forEach(function (w) { VOCAB[w] = 1; });
+  var VLIST = Object.keys(VOCAB);
+  function lev(a, b, max) {
+    if (Math.abs(a.length - b.length) > max) return max + 1;
+    var prev = [], cur, i, j2;
+    for (j2 = 0; j2 <= b.length; j2++) prev[j2] = j2;
+    for (i = 1; i <= a.length; i++) {
+      cur = [i]; var best = i;
+      for (j2 = 1; j2 <= b.length; j2++) {
+        cur[j2] = Math.min(prev[j2] + 1, cur[j2 - 1] + 1, prev[j2 - 1] + (a[i - 1] === b[j2 - 1] ? 0 : 1));
+        if (i > 1 && j2 > 1 && a[i - 1] === b[j2 - 2] && a[i - 2] === b[j2 - 1]) cur[j2] = Math.min(cur[j2], prev[j2 - 2] + 1);
+        if (cur[j2] < best) best = cur[j2];
+      }
+      if (best > max) return max + 1;
+      prev = cur;
+    }
+    return prev[b.length];
+  }
+  function correct(q) {
+    var fixes = [];
+    var out = q.replace(/(^|[^A-Za-z])([a-z][A-Za-z+#]{4,})/g, function (all, pre, w) {
+      var lw = w.toLowerCase();
+      if (VOCAB[lw] || STOP.indexOf(lw) >= 0) return pre + w;
+      var max = lw.length >= 8 ? 2 : 1, bestW = null, bestD = max + 1;
+      for (var i = 0; i < VLIST.length; i++) { var d = lev(lw, VLIST[i], max); if (d < bestD) { bestD = d; bestW = VLIST[i]; if (d === 1 && max === 1) break; } }
+      if (bestW && bestD <= max) { fixes.push(w + " → " + bestW); return pre + bestW; }
+      return pre + w;
+    });
+    return { q: out, fixes: fixes };
+  }
+
+  /* ---------- "how many years of X": durations from the actual work history ---------- */
+  var ROLES = { dr: ["DataRobot", 2024, 11, 0, 0], ya: ["Yellow.ai", 2023, 4, 2024, 1], ac: ["Accenture", 2021, 11, 2023, 3] };
+  var AT = {
+    dr: "Python SQL Bash Flask LangGraph LangChain MCP Semantic Kernel CrewAI AutoGen Tool calling Multi-agent Agent evaluation RAG Hybrid search Claude GPT-4o Mistral Prompting Guardrails Responsible AI AWS Bedrock SageMaker EKS EC2 S3 Lambda IAM Azure Azure OpenAI Docker Kubernetes Terraform GitHub Actions Argo CD Grafana Prometheus MLflow Redis PostgreSQL Airflow dbt REST APIs Microservices LLM evaluation Quality gates pytest Postman Selenium JMeter Locust GitHub Copilot Solution design Requirements Stakeholder demos Escalation Runbooks Estimation Agile / Scrum Mentoring Code review",
+    ya: "Python Claude RAG Semantic chunking Guardrails Prompting LoRA / PEFT GPTQ Llama 3 PyTorch YOLO Computer vision FastAPI React TypeScript Kafka MLflow REST APIs pytest Postman Selenium JMeter Locust GitHub Copilot Azure Azure OpenAI AKS Data Factory Google Cloud BigQuery GKE Cloud Run Quality gates Agile / Scrum",
+    ac: "Python SQL scikit-learn Optuna Spark Databricks Feature engineering Drift detection Azure Data Factory AKS Google Cloud BigQuery Vertex AI GKE Cloud Run OpenShift Kafka"
+  };
+  var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function usedAt(name) {
+    var keys = [];
+    Object.keys(AT).forEach(function (k) { if ((" " + AT[k] + " ").indexOf(" " + name + " ") >= 0) keys.push(k); });
+    return keys;
+  }
+  function span(k) {
+    var r = ROLES[k], now = new Date(), ey = r[3] || now.getFullYear(), em = r[4] || now.getMonth() + 1;
+    return { name: r[0], months: (ey - r[1]) * 12 + (em - r[2]) + 1, label: MON[r[2] - 1] + " " + r[1] + " to " + (r[3] ? MON[r[4] - 1] + " " + r[3] : "now") };
+  }
+  function dur(m) {
+    if (m < 12) return "about " + m + " months";
+    var y = Math.floor(m / 12), r = m % 12;
+    if (r >= 9) return "almost " + (y + 1) + " years";
+    return y + (r ? "+" : "") + " year" + (y > 1 || r ? "s" : "");
+  }
+  function yearsItem(s) {
+    var keys = usedAt(s.name);
+    if (!keys.length) return { id: "stack", title: "Skills · " + s.name, text: s.name + " is in my toolkit, though my resume doesn't tie it to a specific role, so I'd rather walk you through where I've used it in a conversation.", tag: "skill" };
+    var spans = keys.map(span), total = spans.reduce(function (a, b) { return a + b.months; }, 0);
+    var where = spans.map(function (x) { return x.name + " (" + x.label + ")"; });
+    var list = where.length > 1 ? where.slice(0, -1).join(", ") + " and " + where[where.length - 1] : where[0];
+    return { id: "deployments", title: "Experience · " + s.name, text: "I have " + dur(total) + " of hands-on " + s.name + " experience, at " + list + ".", tag: "work history" };
+  }
+  var YEARS_RE = /\b(how (many|much|long)|years?|yrs?|months?|experience (in|with|on)|exp (in|with|on)|worked (with|on)|hands[- ]on)\b/i;
+
+  function answer(q0) {
+    var fix = correct(q0), q = fix.q;
     var out = [], used = {}, how = "";
     function push(it) { if (it && !used[it.title] && out.length < 3) { used[it.title] = 1; out.push(it); } }
+    var sk0 = findSkills(q);
+    if (sk0.length && YEARS_RE.test(q)) { how = "years"; sk0.forEach(function (s) { push(yearsItem(s)); }); }
+    if (!sk0.length) {
+      var m = q.match(/\b(?:with|in|on|of|know|knows|use|used|using)\s+([A-Za-z][\w.+#-]{1,})\s*\??\s*$/i);
+      var GENERIC = "experience total overall it this that them industry production ai ml genai team teams customers clients cloud data python years general us usa".split(" ");
+      if (m) {
+        var term = m[1].toLowerCase().replace(/[?.]+$/, "");
+        if (!VOCAB[term] && GENERIC.indexOf(term) < 0 && STOP.indexOf(term) < 0 && !bm25(term)[0].s) {
+          how = "unknown";
+          var shown = m[1].replace(/[?.]+$/, ""); shown = shown.charAt(0).toUpperCase() + shown.slice(1);
+          out.push({ id: "stack", title: "Not on my resume", text: shown + " isn't on my resume, so I won't claim experience with it. I pick up new tools quickly; here's the closest related work:", tag: "honest" });
+          used["Not on my resume"] = 1;
+        }
+      }
+    }
     for (var n = 0; n < INTENTS.length && out.length < 3; n++) {
+      if (how === "years" && INTENTS[n][1][0] === "Experience") continue;
       if (INTENTS[n][0].test(q)) { if (!how) how = "intent"; INTENTS[n][1].forEach(function (t) { var i = kb(t); if (i >= 0) push(item(i, "intent")); }); }
     }
     var sk = findSkills(q);
@@ -177,20 +280,33 @@
     } else if (out.length < 2 && top >= 4) {
       push(item(hits[0].i, "bm25 " + top.toFixed(2)));
     }
+    if (how === "unknown" && out.length < 3) { push(item(kb("Ownership"), "related")); push(item(kb("Summary"), "related")); }
     if (!out.length) { how = "fallback"; push(item(kb("Summary"), "fallback")); push(item(kb("Contact"), "fallback")); }
-    return { items: out, how: how, top: top };
+    return { items: out, how: how, top: top, fixes: fix.fixes };
   }
 
   $("aTrace").innerHTML = '<span>index <b>' + N + '</b> chunks + <b>' + SK.length + '</b> skills</span><span>model <b>none: extractive</b></span>';
 
-  var SUGS = ["Tell me about yourself", "Why should we hire him?", "Biggest achievement?", "Does he know Kubernetes?", "Customer-facing experience?", "Work authorization?", "Salary expectations?", "Open to relocation and C2C?"];
+  var POOL = ["Tell me about yourself", "Why should we hire him?", "How many years of Python?", "Does he know Kubernetes?", "Biggest achievement?",
+    "Salary expectations?", "Work authorization?", "When can he start?", "Open to relocation?", "W2 or C2C?", "Customer-facing experience?",
+    "How much LangGraph experience?", "What has he built with RAG?", "Leadership experience?", "Cloud experience?", "Strengths?", "Certifications?",
+    "Healthcare experience?", "How does he cut LLM costs?", "Experience with AWS Bedrock?", "Remote or onsite?", "How do I contact him?", "Does he know React?", "Education?"];
   var sugBox = $("sugs");
-  SUGS.forEach(function (s) {
-    var b = document.createElement("button"); b.type = "button"; b.textContent = s;
-    b.addEventListener("click", function () { $("askInput").value = s; run(s); });
-    sugBox.appendChild(b);
-  });
-  $("askInput").placeholder = "Ask anything: skills, projects, salary, visa, relocation…";
+  function shuffleSugs() {
+    sugBox.innerHTML = "";
+    var lab = document.createElement("span"); lab.className = "sug-label"; lab.textContent = "Examples · ask in your own words";
+    sugBox.appendChild(lab);
+    POOL.slice().sort(function () { return Math.random() - .5; }).slice(0, 6).forEach(function (s) {
+      var b = document.createElement("button"); b.type = "button"; b.textContent = s;
+      b.addEventListener("click", function () { $("askInput").value = s; run(s); });
+      sugBox.appendChild(b);
+    });
+    var more = document.createElement("button"); more.type = "button"; more.className = "sug-more"; more.textContent = "↻ More examples";
+    more.addEventListener("click", shuffleSugs);
+    sugBox.appendChild(more);
+  }
+  shuffleSugs();
+  $("askInput").placeholder = "Type any question: experience, skills, salary, visa, start date…";
 
   var aQ = $("aQ"), aA = $("aA"), aSrcs = $("aSrcs"), aTrace = $("aTrace"), job = 0;
   function srcList(items) {
@@ -208,8 +324,8 @@
     q = (q || "").trim(); if (!q) return;
     var my = ++job, t0 = performance.now(), r = answer(q), ms = performance.now() - t0;
     aQ.textContent = q;
-    var labels = { intent: "recruiter question", skill: "skill lookup", bm25: "BM25 search", nearest: "nearest match", fallback: "not in resume" };
-    aTrace.innerHTML = '<span>route <b>' + labels[r.how] + '</b></span><span>sources <b>' + r.items.length + '</b></span><span>search <b>' + ms.toFixed(2) + ' ms</b></span><span>model <b>none: extractive</b></span>';
+    var labels = { unknown: "not on resume", years: "work history", intent: "recruiter question", skill: "skill lookup", bm25: "BM25 search", nearest: "nearest match", fallback: "not in resume" };
+    aTrace.innerHTML = (r.fixes.length ? '<span>read as <b>' + r.fixes.join(", ") + '</b></span>' : '') + '<span>route <b>' + labels[r.how] + '</b></span><span>sources <b>' + r.items.length + '</b></span><span>search <b>' + ms.toFixed(2) + ' ms</b></span><span>model <b>none: extractive</b></span>';
     srcList(r.items);
     var parts = r.items.map(function (it) { return it.text; });
     if (LEAD[r.how]) parts[0] = LEAD[r.how] + parts[0];
