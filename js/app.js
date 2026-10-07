@@ -354,6 +354,9 @@
     }
     if (!done) { var cr = document.createElement("span"); cr.className = "caret"; aA.appendChild(cr); }
   }
+  /* the Ask button and the Enter key both work without a form submit, so sandboxed previews behave the same */
+  $("askBtn").addEventListener("click", function () { run($("askInput").value); });
+  $("askInput").addEventListener("keydown", function (e) { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); run($("askInput").value); } });
   $("askForm").addEventListener("submit", function (e) { e.preventDefault(); run($("askInput").value); });
   aA.querySelectorAll(".cite").forEach(function (c) { c.addEventListener("click", function () { go(c.dataset.go); }); });
   srcList(answer("langgraph agents tool calling mcp crewai autogen").items);
